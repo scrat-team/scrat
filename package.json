@@ -1,0 +1,21 @@
+{
+  "name": "scrat",
+  "version": "0.0.1",
+  "description": "uc front-end integrated solution",
+  "main": "index.js",
+  "bin" : {
+    "scrat" : "bin/scrat"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fis",
+    "uc"
+  ],
+  "dependencies" : {
+    "fis" : "1.7.0"
+  },
+  "author": "fouber",
+  "license": "MIT"
+}
