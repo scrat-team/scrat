@@ -21,9 +21,17 @@ function postpackager(ret, conf, settings, opt){
     }
 
     var map = {
+        res : {},
         version : fis.config.get('version'),
         alias : {}
     };
+    fis.util.map(ret.map.res, function(id, res){
+        map.res[id] = {
+            url : res.uri,
+            type : res.type,
+            deps : res.deps
+        };
+    });
     var views = {};
     fis.util.map(ret.src, function(subpath, file){
         if(file.isComponentModule){
@@ -33,7 +41,8 @@ function postpackager(ret, conf, settings, opt){
                     var filename = json.main || 'index.js';
                     var main = fis.file(file.dirname, filename);
                     if(main.exists()){
-                        map.alias[json.name] = main.getUrl(opt.hash, opt.domain);
+//                        map.alias[json.name] = main.getUrl(opt.hash, opt.domain);
+                        map.alias[json.name] = main.getId();
                     } else {
                         fis.log.warning('unable to find main file of [' + file.subpath + ']');
                     }
@@ -50,7 +59,7 @@ function postpackager(ret, conf, settings, opt){
 
     var mapContent = JSON.stringify(map, null, opt.optimize ? null : 4);
     fis.util.map(views, function(subpath, file){
-        file.setContent(file.getContent().replace(/\/\*component-map\*\//g, mapContent));
+        file.setContent(file.getContent().replace(/\b__FIS_FILE_MAP__\b/g, mapContent));
     });
 
 }
@@ -79,10 +88,16 @@ fis.config.merge({
                 release : false
             },
             {
+                reg : /^\/component_modules\/.*\.json$/i,
+                isComponentModule : true,
+                useMap : false
+            },
+            {
                 reg : /^\/component_modules\/(.*)$/i,
                 isComponentModule : true,
                 isMod : true,
                 useSprite : true,
+                url : '/component_modules/$1',
                 release : 'public/component_modules/$1'
             },
             {
@@ -94,11 +109,13 @@ fis.config.merge({
                 reg : /^\/components\/(.*)$/i,
                 isMod : true,
                 useSprite : true,
+                url : '/${name}/${version}/components/$1',
                 release : 'public/${name}/${version}/components/$1'
             },
             {
                 reg : /^\/views\/(.*\.html?)$/i,
                 isHtmlView : true,
+                url : '/${name}/${version}/$1',
                 release : 'public/${name}/${version}/$1'
             },
             {
@@ -108,6 +125,7 @@ fis.config.merge({
             {
                 reg : /^\/views\/(.*)$/i,
                 useSprite : true,
+                url : '/${name}/${version}/views/$1',
                 release : 'public/${name}/${version}/views/$1'
             },
             {
@@ -129,6 +147,18 @@ fis.config.merge({
         ]
     },
     modules : {
+        postprocessor: {
+            html: 'require-async',
+            htm: 'require-async',
+            js: 'jswrapper, require-async'
+        },
         postpackager : [ postpackager ]
+    },
+    settings : {
+        postprocessor : {
+            jswrapper : {
+                type : 'amd'
+            }
+        }
     }
 });
