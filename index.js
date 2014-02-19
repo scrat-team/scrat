@@ -107,18 +107,30 @@ function createResourceMap(ret, conf, settings, opt){
             }
         }
     });
+    aliased = {};
+    fis.util.map(map.alias, function(alias, id){
+        aliased[id] = alias;
+    });
     fis.util.map(map.deps, function(id, file){
-        var deps = map.deps[id] = [];
-        file.requires.forEach(function(depId, index){
-            var id = map.alias[depId] || depId;
-            if(ret.ids[id]){
+        var deps = [];
+        file.requires.forEach(function(depId){
+            if(map.alias.hasOwnProperty(depId)){
+                deps.push(depId);
+            } else if(aliased.hasOwnProperty(depId)){
+                deps.push(aliased[depId]);
+            } else if(ret.ids.hasOwnProperty(depId)) {
                 deps.push(depId);
             } else {
                 fis.log.warning('undefined module [' + depId + '] require from [' + file.subpath + ']');
             }
         });
+        if(deps.length){
+            map.deps[id] = deps;
+        } else {
+            delete map.deps[id];
+        }
     });
-    console.log(map);
+    console.log(JSON.stringify(map, null, 4));
 }
 
 fis.config.set('project.fileType.text', 'handlebars, jade, ejs');
