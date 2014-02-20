@@ -88,11 +88,14 @@ function createResourceMap(ret, conf, settings, opt){
     fis.util.map(map.alias, function(alias, id){
         aliased[id] = alias;
     });
+    var views = [];
     fis.util.map(ret.src, function(subpath, file){
         var id = file.getId();
         if(file.basename.toLowerCase() === 'component.json'){
             file.release = false;
             delete ret.src[subpath];
+        } else if(file.isViews && file.isText()){
+            views.push(file);
         } else if(file.isComponent && (file.isJsLike || file.isCssLike)){
             var match = file.subpath.match(/^\/components\/([^\/]+)\/\1\.js$/i);
             if(match && match[1] && !(match[1] in map.alias)){
@@ -130,11 +133,19 @@ function createResourceMap(ret, conf, settings, opt){
             delete map.deps[id];
         }
     });
-    console.log(JSON.stringify(map, null, 4));
+    var stringify = JSON.stringify(map, null, opt.optimize ? null : 4);
+    views.forEach(function(file){
+        file.setContent(file.getContent().replace(/\b__FRAMEWORK_CONFIG__\b/g, stringify));
+    });
 }
 
 fis.config.set('project.fileType.text', 'handlebars, jade, ejs');
-fis.config.set('settings.postprocessor.jswrapper.type', 'amd');
+fis.config.set('modules.postprocessor.js', function(content, file){
+    if(file.isMod){
+        content = 'define(\'' + file.getId() + '\', function(require, exports, module){' + content + '\n\n});';
+    }
+    return content;
+});
 fis.config.set('modules.postpackager', [ createUAEFiles, createResourceMap ]);
 fis.config.set('roadmap.path', [
     {
@@ -165,8 +176,15 @@ fis.config.set('roadmap.path', [
         release : '/public/c/${name}/${version}/$1'
     },
     {
+        reg : /^\/views\/(.*\.(?:html?|js))$/,
+        useCache : false,
+        isViews : true,
+        release : '/public/${name}/${version}/$1'
+    },
+    {
         reg : /^\/views\/(.*)$/,
         useSprite : true,
+        isViews : true,
         release : '/public/${name}/${version}/$1'
     },
     {
