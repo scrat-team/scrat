@@ -1,8 +1,9 @@
 {
     "name": "scrat",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "uc front-end integrated solution",
     "main": "index.js",
+    "preferGlobal": true,
     "bin": {
         "scrat": "bin/scrat"
     },
