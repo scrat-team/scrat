@@ -165,6 +165,7 @@ fis.config.set('roadmap.path', [
         id : '$1',
         isMod : true,
         useSprite : true,
+        url : '/c/$1',
         release : '/public/c/$1'
     },
     {
@@ -173,23 +174,27 @@ fis.config.set('roadmap.path', [
         isMod : true,
         useSprite : true,
         isComponent : true,
+        url : '/c/${name}/${version}/$1',
         release : '/public/c/${name}/${version}/$1'
     },
     {
         reg : /^\/views\/(.*\.(?:html?|js))$/,
         useCache : false,
         isViews : true,
+        url : '/${name}/${version}/$1',
         release : '/public/${name}/${version}/$1'
     },
     {
         reg : /^\/views\/(.*)$/,
         useSprite : true,
         isViews : true,
+        url : '/${name}/${version}/$1',
         release : '/public/${name}/${version}/$1'
     },
     {
         reg : /^\/public\/(.*)$/,
         useSprite : true,
+        url : '/${name}/${version}/$1',
         release : '/public/${name}/${version}/$1'
     },
     {

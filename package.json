@@ -1,6 +1,6 @@
 {
     "name": "scrat",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "uc front-end integrated solution",
     "main": "index.js",
     "preferGlobal": true,
@@ -21,7 +21,7 @@
     "dependencies": {
         "fis": "1.7.1",
         "scrat-command-install" : "0.0.3",
-        "scrat-command-server"  : "0.0.5"
+        "scrat-command-server"  : "0.0.6"
     },
     "author": "fouber",
     "license": "MIT"
