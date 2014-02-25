@@ -13,8 +13,8 @@ function createUAEFiles(ret){
         ret.pkg[file.subpath] = file;
     });
     //create private/log
-    if(!ret.src['/private/log']){
-        var file = fis.file(root, 'private', 'log');
+    if(!ret.src['/private/log/log']){
+        var file = fis.file(root, 'private/log/log');
         file.setContent('');
         ret.pkg[file.subpath] = file;
     }
