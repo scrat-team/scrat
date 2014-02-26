@@ -32,6 +32,9 @@ function createResourceMap(ret, conf, settings, opt){
     var map = {
         version : fis.config.get('version'),
         name : fis.config.get('name'),
+        combo : !!opt.pack,
+        urlPattern : fis.config.get('urlPattern', '/c/%s'),
+        comboPattern : fis.config.get('comboPattern', '/??%s'),
         alias : {},
         deps : {}
     };
