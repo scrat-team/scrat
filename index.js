@@ -149,10 +149,16 @@ fis.config.set('modules.postprocessor.js', function(content, file){
     }
     return content;
 });
+fis.config.set('modules.parser.handlebars', 'handlebars');
 fis.config.set('modules.postpackager', [ createUAEFiles, createResourceMap ]);
 fis.config.set('roadmap.path', [
     {
-        reg : /\.(ejs|handlebars|md)$/i,
+        reg : '**.handlebars',
+        release : false,
+        isJsLike : true
+    },
+    {
+        reg : /\.(ejs|md)$/i,
         release : false,
         isHtmlLike : true
     },
@@ -207,7 +213,7 @@ fis.config.set('roadmap.path', [
     {
         reg : '**',
         useStandard : false,
-        useOptimzer : false
+        useOptimizer : false
     }
 ]);
 
