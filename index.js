@@ -29,15 +29,15 @@ function readJSON(content, path){
 }
 
 function createResourceMap(ret, conf, settings, opt){
-    var map = {
-        version : fis.config.get('version'),
-        name : fis.config.get('name'),
-        combo : !!opt.pack,
-        urlPattern : fis.config.get('urlPattern', '/c/%s'),
-        comboPattern : fis.config.get('comboPattern', '/??%s'),
-        alias : {},
-        deps : {}
-    };
+    var map = fis.config.get('framework', {});
+    var aliasConfig = map.alias || {};
+    map.version = fis.config.get('version');
+    map.name = fis.config.get('name');
+    map.combo = !!opt.pack;
+    map.urlPattern = map.urlPattern || '/c/%s';
+    map.comboPattern = map.comboPattern || '/??%s';
+    map.alias = {};
+    map.deps = {};
     var componentFile = ret.src['/component.json'];
     if(componentFile){
         var json = readJSON(componentFile.getContent(), componentFile.subpath);
@@ -79,7 +79,7 @@ function createResourceMap(ret, conf, settings, opt){
             }
         });
     }
-    fis.util.map(fis.config.get('alias', {}), function(name, subpath){
+    fis.util.map(aliasConfig, function(name, subpath){
         var file = ret.src['/' + subpath.replace(/^\//, '')];
         if(file){
             map.alias[name] = file.getId();
