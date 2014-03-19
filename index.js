@@ -142,7 +142,7 @@ function createResourceMap(ret, conf, settings, opt){
     });
 }
 
-fis.config.set('project.fileType.text', 'handlebars, jade, ejs');
+fis.config.set('project.fileType.text', 'handlebars, jade, ejs, jsx');
 fis.config.set('modules.postprocessor.js', function(content, file){
     if(file.isMod){
         content = 'define(\'' + file.getId() + '\', function(require, exports, module){' + content + '\n\n});';
@@ -151,6 +151,7 @@ fis.config.set('modules.postprocessor.js', function(content, file){
 });
 fis.config.set('modules.parser.handlebars', 'handlebars');
 fis.config.set('modules.postpackager', [ createUAEFiles, createResourceMap ]);
+fis.config.set('roadmap.ext.jsx', 'js');
 fis.config.set('roadmap.path', [
     {
         reg : '**.handlebars',
