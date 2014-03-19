@@ -1,1 +1,1 @@
-# uc front-end integrated solution
+# Another front-end integrated solution
