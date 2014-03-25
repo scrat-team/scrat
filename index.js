@@ -227,3 +227,10 @@ fis.config.set('uae_conf.config', {
         port : 11211
     }]
 });
+
+//alias
+Object.defineProperty(global, 'scrat', {
+    enumerable : true,
+    writable : false,
+    value : fis
+});
