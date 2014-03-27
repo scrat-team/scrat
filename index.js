@@ -28,24 +28,14 @@ function readJSON(content, path){
     }
 }
 
-function createResourceMap(ret, conf, settings, opt){
-    var map = fis.config.get('framework', {});
-    var aliasConfig = map.alias || {};
-    map.version = fis.config.get('version');
-    map.name = fis.config.get('name');
-    map.combo = !!opt.pack;
-    map.urlPattern = map.urlPattern || '/c/%s';
-    map.comboPattern = map.comboPattern || '/??%s';
-    map.alias = {};
-    map.deps = {};
-    var componentFile = ret.src['/component.json'];
+function makeComponentModulesAlias(componentFile, map, ret) {
     if(componentFile){
         var json = readJSON(componentFile.getContent(), componentFile.subpath);
         fis.util.map(json.dependencies, function(name, version){
             if(/^\d+(\.\d+){2}$/.test(version)){
                 var module_name = name.toLowerCase().split('/').join('-');
                 var dirname = '/component_modules/' + module_name + '/' + version + '/';
-                var file = ret.src[dirname + 'component.json'];
+                var file = componentFile = ret.src[dirname + 'component.json'];
                 var alias = name;
                 if(file){
                     var json = readJSON(file.getContent(), file.subpath);
@@ -56,9 +46,9 @@ function createResourceMap(ret, conf, settings, opt){
                         } else {
                             fis.log.error('missing main file [' + json.main + '] of module [' + name + ']');
                         }
-                    } else if(file = ret.src[dirname + 'index.css']){
-                        map.alias[alias] = file.getId();
                     } else if(file = ret.src[dirname + 'index.js']){
+                        map.alias[alias] = file.getId();
+                    } else if(file = ret.src[dirname + 'index.css']){
                         map.alias[alias] = file.getId();
                     } else {
                         fis.log.error('can`t find module [' + name + '@' + version + '] main file');
@@ -74,11 +64,25 @@ function createResourceMap(ret, conf, settings, opt){
                 } else {
                     fis.log.error('can`t find module [' + name + '@' + version + '] in [/component.json]');
                 }
+                makeComponentModulesAlias(componentFile, map, ret);
             } else {
                 fis.log.error('invalid version [' + version + '] of component [' + name + ']');
             }
         });
     }
+}
+
+function createResourceMap(ret, conf, settings, opt){
+    var map = fis.config.get('framework', {});
+    var aliasConfig = map.alias || {};
+    map.version = fis.config.get('version');
+    map.name = fis.config.get('name');
+    map.combo = !!opt.pack;
+    map.urlPattern = map.urlPattern || '/c/%s';
+    map.comboPattern = map.comboPattern || '/??%s';
+    map.alias = {};
+    map.deps = {};
+    makeComponentModulesAlias(ret.src['/component.json'], map, ret);
     fis.util.map(aliasConfig, function(name, subpath){
         var file = ret.src['/' + subpath.replace(/^\//, '')];
         if(file){
