@@ -103,7 +103,7 @@ function createResourceMap(ret, conf, settings, opt){
             delete ret.src[subpath];
         } else if(file.isViews && file.isText()){
             views.push(file);
-        } else if(file.isComponent && (file.isJsLike || file.isCssLike)){
+        } else if(file.isComponent && file.isJsLike){
             var match = file.subpath.match(/^\/components\/(.*?([^\/]+))\/\2\.js$/i);
             if(match && match[1] && !map.alias.hasOwnProperty(match[1])){
                 map.alias[match[1]] = id;
@@ -195,18 +195,32 @@ fis.config.set('roadmap.path', [
         release : '/views/${name}/${version}/$1'
     },
     {
+        reg : /^\/component_modules\/(.*)\.(styl|css)$/i,
+        id : '$1.css',
+        isMod : true,
+        useSprite : true,
+        url : '${urlPrefix}/c/$1.$2',
+        release : '/public/c/$1.$2'
+    },
+    {
         reg : /^\/component_modules\/(.*)$/i,
         id : '$1',
         isMod : true,
-        useSprite : true,
         url : '${urlPrefix}/c/$1',
         release : '/public/c/$1'
+    },
+    {
+        reg : /^\/components\/(.*)\.(styl|css)$/i,
+        id : '${name}/${version}/$1.css',
+        isMod : true,
+        useSprite : true,
+        url : '${urlPrefix}/c/${name}/${version}/$1.$2',
+        release : '/public/c/${name}/${version}/$1.$2'
     },
     {
         reg : /^\/components\/(.*)$/i,
         id : '${name}/${version}/$1',
         isMod : true,
-        useSprite : true,
         isComponent : true,
         url : '${urlPrefix}/c/${name}/${version}/$1',
         release : '/public/c/${name}/${version}/$1'
