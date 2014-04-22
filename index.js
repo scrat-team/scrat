@@ -104,8 +104,8 @@ function createResourceMap(ret, conf, settings, opt){
         } else if(file.isViews && file.isText()){
             views.push(file);
         } else if(file.isComponent && (file.isJsLike || file.isCssLike)){
-            var match = file.subpath.match(/^\/components\/([^\/]+)\/\1\.js$/i);
-            if(match && match[1] && !(match[1] in map.alias)){
+            var match = file.subpath.match(/^\/components\/(.*?([^\/]+))\/\2\.js$/i);
+            if(match && match[1] && !map.alias.hasOwnProperty(match[1])){
                 map.alias[match[1]] = id;
             }
             if(file.requires.length){
@@ -146,7 +146,7 @@ function createResourceMap(ret, conf, settings, opt){
     });
 }
 
-fis.config.set('project.fileType.text', 'handlebars, jade, ejs, jsx');
+fis.config.set('project.fileType.text', 'handlebars, jade, ejs, jsx, styl');
 fis.config.set('modules.postprocessor.js', function(content, file){
     if(file.isMod){
         content = 'define(\'' + file.getId() + '\', function(require, exports, module){' + content + '\n\n});';
@@ -154,8 +154,11 @@ fis.config.set('modules.postprocessor.js', function(content, file){
     return content;
 });
 fis.config.set('modules.parser.handlebars', 'handlebars');
+fis.config.set('modules.parser.styl', 'stylus');
 fis.config.set('modules.postpackager', [ createUAEFiles, createResourceMap ]);
 fis.config.set('roadmap.ext.jsx', 'js');
+fis.config.set('roadmap.ext.styl', 'css');
+fis.config.set('urlPrefix', '');
 fis.config.set('roadmap.path', [
     {
         reg : '**.handlebars',
@@ -163,7 +166,7 @@ fis.config.set('roadmap.path', [
         isJsLike : true
     },
     {
-        reg : /\.(ejs|md)$/i,
+        reg : '**.md',
         release : false,
         isHtmlLike : true
     },
@@ -175,11 +178,28 @@ fis.config.set('roadmap.path', [
         reg : '**.jade'
     },
     {
+        reg : /^\/component_modules\/(.*\.tpl)$/i,
+        isHtmlLike : true,
+        release : '/views/c/$1'
+    },
+    {
+        reg : /^\/components\/(.*\.tpl)$/i,
+        isHtmlLike : true,
+        release : '/views/c/${name}/${version}/$1'
+    },
+    {
+        reg : /^\/views\/(.*\.tpl)$/,
+        useCache : false,
+        isViews : true,
+        isHtmlLike : true,
+        release : '/views/${name}/${version}/$1'
+    },
+    {
         reg : /^\/component_modules\/(.*)$/i,
         id : '$1',
         isMod : true,
         useSprite : true,
-        url : '/c/$1',
+        url : '${urlPrefix}/c/$1',
         release : '/public/c/$1'
     },
     {
@@ -188,27 +208,27 @@ fis.config.set('roadmap.path', [
         isMod : true,
         useSprite : true,
         isComponent : true,
-        url : '/c/${name}/${version}/$1',
+        url : '${urlPrefix}/c/${name}/${version}/$1',
         release : '/public/c/${name}/${version}/$1'
     },
     {
         reg : /^\/views\/(.*\.(?:html?|js))$/,
         useCache : false,
         isViews : true,
-        url : '/${name}/${version}/$1',
+        url : '${urlPrefix}/${name}/${version}/$1',
         release : '/public/${name}/${version}/$1'
     },
     {
         reg : /^\/views\/(.*)$/,
         useSprite : true,
         isViews : true,
-        url : '/${name}/${version}/$1',
+        url : '${urlPrefix}/${name}/${version}/$1',
         release : '/public/${name}/${version}/$1'
     },
     {
         reg : /^\/public\/(.*)$/,
         useSprite : true,
-        url : '/${name}/${version}/$1',
+        url : '${urlPrefix}/${name}/${version}/$1',
         release : '/public/${name}/${version}/$1'
     },
     {

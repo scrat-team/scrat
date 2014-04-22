@@ -1,6 +1,6 @@
 {
     "name": "scrat",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "uc front-end integrated solution",
     "main": "index.js",
     "preferGlobal": true,
@@ -10,18 +10,16 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "keywords": [
-        "fis",
-        "uc"
-    ],
+    "keywords": [ "fis", "uc" ],
     "repository": {
         "type": "git",
         "url": "https://github.com/fouber/scrat.git"
     },
     "dependencies": {
-        "fis": "1.7.3",
+        "fis": "1.7.8",
         "scrat-command-install" : "0.0.3",
         "scrat-command-server"  : "0.0.7",
+        "scrat-parser-stylus"  : "0.0.1",
         "fis-parser-handlebars" : "0.0.1"
     },
     "author": "fouber",
