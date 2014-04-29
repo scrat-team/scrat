@@ -80,6 +80,9 @@ function createResourceMap(ret, conf, settings, opt){
     map.combo = !!opt.pack;
     map.urlPattern = map.urlPattern || '/c/%s';
     map.comboPattern = map.comboPattern || '/??%s';
+    if(opt.md5){
+        map.hash = map.hash || fis.util.md5(Date.now() + '-' + Math.random());
+    }
     map.alias = {};
     map.deps = {};
     makeComponentModulesAlias(ret.src['/component.json'], map, ret);
@@ -199,13 +202,20 @@ fis.config.set('roadmap.path', [
         id : '$1.css',
         isMod : true,
         useSprite : true,
+        useHash : false,
         url : '${urlPrefix}/c/$1.$2',
         release : '/public/c/$1.$2'
     },
     {
-        reg : /^\/component_modules\/(.*)$/i,
+        reg : /^\/component_modules\/(.*\.js)$/i,
         id : '$1',
         isMod : true,
+        useHash : false,
+        url : '${urlPrefix}/c/$1',
+        release : '/public/c/$1'
+    },
+    {
+        reg : /^\/component_modules\/(.*)$/i,
         url : '${urlPrefix}/c/$1',
         release : '/public/c/$1'
     },
@@ -214,14 +224,21 @@ fis.config.set('roadmap.path', [
         id : '${name}/${version}/$1.css',
         isMod : true,
         useSprite : true,
+        useHash : false,
         url : '${urlPrefix}/c/${name}/${version}/$1.$2',
         release : '/public/c/${name}/${version}/$1.$2'
     },
     {
-        reg : /^\/components\/(.*)$/i,
+        reg : /^\/components\/(.*\.js)$/i,
         id : '${name}/${version}/$1',
         isMod : true,
         isComponent : true,
+        useHash : false,
+        url : '${urlPrefix}/c/${name}/${version}/$1',
+        release : '/public/c/${name}/${version}/$1'
+    },
+    {
+        reg : /^\/components\/(.*)$/i,
         url : '${urlPrefix}/c/${name}/${version}/$1',
         release : '/public/c/${name}/${version}/$1'
     },
@@ -251,8 +268,8 @@ fis.config.set('roadmap.path', [
     },
     {
         reg : '**',
-        useStandard : false,
-        useOptimizer : false
+        useHash : false,
+        useCompile : false
     }
 ]);
 

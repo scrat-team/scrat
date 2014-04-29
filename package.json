@@ -1,6 +1,6 @@
 {
     "name": "scrat",
-    "version": "0.1.8",
+    "version": "0.1.10",
     "description": "uc front-end integrated solution",
     "main": "index.js",
     "preferGlobal": true,
@@ -19,7 +19,7 @@
         "fis": "1.7.8",
         "scrat-command-install" : "0.0.3",
         "scrat-command-server"  : "0.0.7",
-        "scrat-parser-stylus"  : "0.0.2",
+        "scrat-parser-stylus"  : "0.0.3",
         "fis-parser-handlebars" : "0.0.1"
     },
     "author": "fouber",
