@@ -72,6 +72,74 @@ function makeComponentModulesAlias(componentFile, map, ret) {
     }
 }
 
+function coverGlobalDeps(content,srcMap,optimize){   //覆盖全局的alias以及deps对象  
+    var deps = getDirectDeps(content);
+    var filterAlias ={};
+    var filterDeps = {};
+    var map = shallowclone(srcMap);
+
+    deps.forEach(function(v,k){        
+        addAliasRecursion(filterAlias,filterDeps,srcMap,v);
+    });
+
+    map.alias = filterAlias;
+    map.deps  = filterDeps;    
+
+    return JSON.stringify(map, null, optimize ? null : 4);
+}
+
+function shallowclone(srcMap){
+    var o =  {};
+
+    for(var k in srcMap){
+        o[k] = srcMap[k];
+    }
+    return o;
+}
+
+function addAliasRecursion(targetAlias,targetDeps,map,key){ //递归添加别名项
+    
+    if(typeof(targetAlias[key]) === "undefined"){
+        targetAlias[key] = map.alias[key];
+        addDepsRecursion(targetAlias,targetDeps,map,map.alias[key]);
+    }
+}
+
+function addDepsRecursion(targetAlias,targetDeps,map,key){   //递归添加依赖项
+    var deps  = map.deps;
+    var tmp   = deps[key];
+    var alias = map.alias;
+
+    if(typeof(tmp) !== "undefined"){
+        targetDeps[key] = tmp;
+
+        tmp.forEach(function(v,k){
+
+            if(typeof(alias[v]) !== "undefined"){
+                addAliasRecursion(targetAlias,targetDeps,map,v);
+            }else{
+                addDepsRecursion(targetAlias,targetDeps,map,v);
+            }            
+        });
+    }   
+}
+
+function getDirectDeps(content){    //获取页面内容的直接依赖项
+    var reg = /(require\.async\(\[*([\w\W]*?)\]|require\.async\(([\w\W]*?),)/;
+
+    if(reg.test(content)){
+        var deps = RegExp.$2||RegExp.$3;
+
+        deps = deps.replace(/'|"/g,"").split(",");
+        deps = deps.filter(function(v,k){
+            return v.replace(/\s/g,"") != "";
+        });
+
+        return deps;
+    }
+    return [];
+}
+
 function createResourceMap(ret, conf, settings, opt){
     var map = fis.config.get('framework', {});
     var aliasConfig = map.alias || {};
@@ -142,7 +210,10 @@ function createResourceMap(ret, conf, settings, opt){
     });
     var stringify = JSON.stringify(map, null, opt.optimize ? null : 4);
     views.forEach(function(file){
-        file.setContent(file.getContent().replace(/\b__FRAMEWORK_CONFIG__\b/g, stringify));
+        //file.setContent(file.getContent().replace(/\b__FRAMEWORK_CONFIG__\b/g, stringify));
+        
+        file.setContent(file.getContent().replace(/\b__FRAMEWORK_CONFIG__\b/g,
+            coverGlobalDeps(file.getContent(),map,opt.optimize)));
     });
 }
 
