@@ -103,10 +103,12 @@ module.exports = function (ret, conf, settings, opt){
             delete ret.src[subpath];
         } else if(file.isViews && file.isText()){
             views.push(file);
-        } else if(file.isComponent && file.isJsLike){
-            var match = file.subpath.match(/^\/components\/(.*?([^\/]+))\/\2\.js$/i);
-            if(match && match[1] && !map.alias.hasOwnProperty(match[1])){
-                map.alias[match[1]] = id;
+        } else if(file.isComponent && (file.isJsLike || file.isCssLike)){
+            if(file.isJsLike){
+                var match = file.subpath.match(/^\/components\/(.*?([^\/]+))\/\2\.js$/i);
+                if(match && match[1] && !map.alias.hasOwnProperty(match[1])){
+                    map.alias[match[1]] = id;
+                }
             }
             if(file.requires.length){
                 map.deps[id] = file;
