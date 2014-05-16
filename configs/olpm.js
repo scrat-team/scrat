@@ -16,7 +16,6 @@ module.exports = [
         reg : /^\/views\/([^\/]+)\/\1\.html$/,
         isLayout : true,
         layoutName : '$1',
-        useMap : true,
         useCache : false,
         release : '/layouts/$1.html'
     },
@@ -24,7 +23,6 @@ module.exports = [
         reg : /^\/views\/([^\/]+)\.html$/,
         isLayout : true,
         layoutName : '$1',
-        useMap : true,
         useCache : false,
         release : '/layouts/$1.html'
     },

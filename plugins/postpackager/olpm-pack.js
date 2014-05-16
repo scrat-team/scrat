@@ -16,37 +16,6 @@ var wrapError = function(err){
     return html;
 };
 
-var getOlpmInfo = function(file, projCode, opt, ret){
-    var name = file.filename;
-    var prefix = file.isLayout ? 'layout' : 'unit';
-    var description = '';
-    var olpmJson = file.dirname + '/olpm.json';
-    if(fis.util.exists(olpmJson)){
-        var olpmInfo = fis.util.readJSON(olpmJson);
-        name = olpmInfo.name || name;
-        description = olpmInfo.description;
-    } else {
-        fis.log.warning('missing olpm.json file of file [' + file.subpath + ']');
-    }
-    var info = {
-        file  : file.release,
-        name  : name,
-        description : description || '',
-        code  : projCode + '_' + prefix + '_' + file.filename
-    };
-    if(file.isUnit){
-        var data = ret.src[file.subdirname + '/data.js'];
-        if(data){
-            info.data = data.release;
-        }
-    }
-    var thumb = ret.src[file.subdirname + '/thumb.png'];
-    if(thumb){
-        info.thumb = opt.md5 ? thumb.getHashRelease() : thumb.release;
-    }
-    return info;
-};
-
 module.exports = function(ret, conf, settings, opt){
     var olpm = fis.config.get('olpm');
     if(olpm.code && olpm.name){
@@ -61,7 +30,45 @@ module.exports = function(ret, conf, settings, opt){
             }
         };
         var isInline = olpm.pack === fis.olpm.PACK_TYPE_INLINE;
+
         var codes = {};
+        var getOlpmInfo = function(file, projCode, opt, ret){
+            var prefix = file.isLayout ? 'layout' : 'unit';
+            var code = projCode + '_' + prefix + '_' + file.filename;
+            if(codes.hasOwnProperty(code)){
+                fis.log.error('redeclare code in file [' + codes[code] + '] and [' + file.subpath + '] ');
+            } else {
+                codes[code] = file.subpath;
+            }
+            var name = file.filename;
+            var description = '';
+            var olpmJson = file.dirname + '/olpm.json';
+            if(fis.util.exists(olpmJson)){
+                var olpmInfo = fis.util.readJSON(olpmJson);
+                name = olpmInfo.name || name;
+                description = olpmInfo.description;
+            } else {
+                fis.log.warning('missing olpm.json file of file [' + file.subpath + ']');
+            }
+            var info = {
+                file  : file.release,
+                name  : name,
+                description : description || '',
+                code  : code
+            };
+            if(file.isUnit){
+                var data = ret.src[file.subdirname + '/data.js'];
+                if(data){
+                    info.data = data.release;
+                }
+            }
+            var thumb = ret.src[file.subdirname + '/thumb.png'];
+            if(thumb){
+                info.thumb = opt.md5 ? thumb.getHashRelease() : thumb.release;
+            }
+            return info;
+        };
+
         fis.util.map(ret.src, function(subpath, file){
             if(file.isLayout){
                 //todo
@@ -203,25 +210,27 @@ module.exports = function(ret, conf, settings, opt){
                     content = content.replace(/(?=<\/body>)/i, scripts);
                 }
                 file.setContent(content);
-                map.files.layouts.push(getOlpmInfo(file, olpm.code, opt, ret));
-            } else if(file.isUnit){
-                //todo
+                if(opt.pack) {
+                    map.files.layouts.push(getOlpmInfo(file, olpm.code, opt, ret));
+                }
+            } else if(file.isUnit && opt.pack){
                 map.files.units.push(getOlpmInfo(file, olpm.code, opt, ret));
             } else if(file.isMod && opt.pack) {
-                //todo
                 delete ret.src[file.subpath];
                 file.release = false;
-            } else if(file.isAssets){
+            } else if(file.isAssets && opt.pack){
                 map.files.assets.push({
                     file : opt.md5 ? file.getHashRelease() : file.release,
                     type : file.rExt.replace(/^\./, '')
                 });
             }
         });
-        var file = fis.file(fis.project.getProjectPath('release.json'));
-        file.setContent(JSON.stringify(map, null, 4));
-        file.compiled = true;
-        ret.pkg[file.subpath] = file;
+        if(opt.pack){
+            var file = fis.file(fis.project.getProjectPath('release.json'));
+            file.setContent(JSON.stringify(map, null, 4));
+            file.compiled = true;
+            ret.pkg[file.subpath] = file;
+        }
     } else if(!olpm.code) {
         fis.log.error('missing project code, use `fis.config.set("olpm.code", value);` in fis-conf.js');
     } else if(!olpm.name){
