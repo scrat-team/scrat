@@ -19,13 +19,11 @@ var wrapError = function(err){
 var getOlpmInfo = function(file, projCode, opt, ret){
     var name = file.filename;
     var prefix = file.isLayout ? 'layout' : 'unit';
-    var code = name;
     var description = '';
     var olpmJson = file.dirname + '/olpm.json';
     if(fis.util.exists(olpmJson)){
         var olpmInfo = fis.util.readJSON(olpmJson);
         name = olpmInfo.name || name;
-        code = olpmInfo.code || code;
         description = olpmInfo.description;
     } else {
         fis.log.warning('missing olpm.json file of file [' + file.subpath + ']');
@@ -34,7 +32,7 @@ var getOlpmInfo = function(file, projCode, opt, ret){
         file  : file.release,
         name  : name,
         description : description || '',
-        code  : projCode + '_' + prefix + '_' + code
+        code  : projCode + '_' + prefix + '_' + name
     };
     if(file.isUnit){
         var data = ret.src[file.subdirname + '/data.js'];
@@ -108,7 +106,7 @@ module.exports = function(ret, conf, settings, opt){
                             if(!opt.pack){
                                 var ejs = new EJS({text:tpl.getContent()});
                                 //todo
-                                var dataFileName = (data||'data').replace(/\.js$/, '') + '.js';
+                                var dataFileName = ( data || 'data' ).replace(/\.js$/, '') + '.js';
                                 var dataFile = fis.file(tpl.dirname + '/' + dataFileName);
                                 if(dataFile){
                                     var sandbox = { module : {} };
@@ -130,7 +128,6 @@ module.exports = function(ret, conf, settings, opt){
                     }
                     return m;
                 });
-                collect(file);
                 var eof = opt.optimize ? '' : '\n';
                 var styles = '', scripts = '';
                 if(opt.pack){

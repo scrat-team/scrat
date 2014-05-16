@@ -8,6 +8,13 @@ var defaultConfig = require('./configs/default.js');
 fis.config.merge(defaultConfig);
 
 fis.olpm = function(info){
+    if(typeof info === 'string') {
+        info = {
+            code : info,
+            name : arguments[1] || '',
+            description : arguments[2] || ''
+        };
+    }
     info.pack = info.pack || fis.olpm.PACK_TYPE_EXTERNAL;
     fis.config.set('olpm', info);
     var domain = 'http://image.uc.cn';
