@@ -32,7 +32,7 @@ var getOlpmInfo = function(file, projCode, opt, ret){
         file  : file.release,
         name  : name,
         description : description || '',
-        code  : projCode + '_' + prefix + '_' + name
+        code  : projCode + '_' + prefix + '_' + file.filename
     };
     if(file.isUnit){
         var data = ret.src[file.subdirname + '/data.js'];
