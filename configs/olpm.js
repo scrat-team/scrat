@@ -5,7 +5,7 @@ module.exports = [
     },
     {
         //component.json, olpm.json, readme.md, _xxx.oo, xxx.inline.oo
-        reg : /\/(component\.json|olpm\.json|readme\.md|_[^\/]+\.\w+|.*\.inline\.\w+|.*\.sh)$/i,
+        reg : /\/(component\.json|olpm\.json|readme\.md|_[^\/]+\.\w+|.*\.inline\.\w+|.*\.sh|.*\.bat)$/i,
         release : false
     },
     {

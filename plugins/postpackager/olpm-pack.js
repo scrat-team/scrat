@@ -90,7 +90,7 @@ module.exports = function(ret, conf, settings, opt){
                         res.css.push(file);
                     }
                 };
-                content = content.replace(UNIT_REG, function(m, $1){
+                content = content.replace(UNIT_REG, function(m){
                     var name, data;
                     m = m.replace(UNIT_NAME_REG, function(mm, $$1){
                         name = $$1;
@@ -130,53 +130,66 @@ module.exports = function(ret, conf, settings, opt){
                     }
                     return m;
                 });
+                collect(file);
                 var eof = opt.optimize ? '' : '\n';
                 var styles = '', scripts = '';
                 if(opt.pack){
                     //pack css
-                    var css = '';
-                    res.css.forEach(function(file){
+                    if(res.css.length){
+                        var css = '';
+                        res.css.forEach(function(file){
+                            if(isInline){
+                                var attr = opt.optimize ? '' : ' data-path="' + file.subpath + '"';
+                                css += [ '<style' + attr + '>', file.getContent(), '</style>', '' ].join(eof);
+                            } else {
+                                var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
+                                css += [ comment, file.getContent(), '' ].join(eof);
+                            }
+                        });
                         if(isInline){
-                            var attr = opt.optimize ? '' : ' data-path="' + file.subpath + '"';
-                            css += [ '<style' + attr + '>', file.getContent(), '</style>', '' ].join(eof);
+                            styles = css;
                         } else {
-                            var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
-                            css += [ comment, file.getContent(), '' ].join(eof);
+                            var cssfile = fis.file(fis.project.getProjectPath('pkg/' + file.filename + '.css'));
+                            cssfile.setContent(css);
+                            cssfile.compiled = true;
+                            ret.pkg[cssfile.subpath] = cssfile;
+                            styles = '<link rel="stylesheet" href="' + cssfile.getUrl(opt.hash, opt.domain) + '"/>' + eof;
+                            map.files.assets.push({
+                                file : opt.md5 ? cssfile.getHashRelease() : cssfile.release,
+                                type : cssfile.rExt.replace(/^\./, '')
+                            });
                         }
-                    });
-                    if(isInline){
-                        styles = css;
-                    } else {
-                        var cssfile = fis.file(fis.project.getProjectPath('pkg/' + file.filename + '.css'));
-                        cssfile.setContent(css);
-                        cssfile.compiled = true;
-                        ret.pkg[cssfile.subpath] = cssfile;
-                        styles = '<link rel="stylesheet" type="text/css" href="' + cssfile.getUrl(opt.hash, opt.domain) + '"/>' + eof;
                     }
 
-                    //pack js
-                    var js = '';
-                    res.js.forEach(function(file){
+                    if(res.js.length){
+                        //pack js
+                        var js = '';
+                        res.js.forEach(function(file){
+                            if(isInline){
+                                var attr = opt.optimize ? '' : ' data-path="' + file.subpath + '"';
+                                js += [ '<script' + attr + '>', file.getContent(), '</script>', '' ].join(eof);
+                            } else {
+                                var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
+                                js += [ comment, file.getContent(), '' ].join(eof);
+                            }
+                        });
                         if(isInline){
-                            var attr = opt.optimize ? '' : ' data-path="' + file.subpath + '"';
-                            js += [ '<script' + attr + '>', file.getContent(), '</script>', '' ].join(eof);
+                            scripts = js;
                         } else {
-                            var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
-                            js += [ comment, file.getContent(), '' ].join(eof);
+                            var jsfile = fis.file(fis.project.getProjectPath('pkg/' + file.filename + '.js'));
+                            jsfile.setContent(js);
+                            jsfile.compiled = true;
+                            ret.pkg[jsfile.subpath] = jsfile;
+                            scripts = '<script src="' + jsfile.getUrl(opt.hash, opt.domain) + '"></script>' + eof;
+                            map.files.assets.push({
+                                file : opt.md5 ? jsfile.getHashRelease() : jsfile.release,
+                                type : jsfile.rExt.replace(/^\./, '')
+                            });
                         }
-                    });
-                    if(isInline){
-                        scripts = js;
-                    } else {
-                        var jsfile = fis.file(fis.project.getProjectPath('pkg/' + file.filename + '.js'));
-                        jsfile.setContent(js);
-                        jsfile.compiled = true;
-                        ret.pkg[jsfile.subpath] = jsfile;
-                        scripts = '<script src="' + jsfile.getUrl(opt.hash, opt.domain) + '"></script>' + eof;;
                     }
                 } else {
                     res.css.forEach(function(file){
-                        styles += '<link rel="stylesheet" type="text/css" href="' + file.getUrl(opt.hash, opt.domain) + '"/>' + eof;
+                        styles += '<link rel="stylesheet" href="' + file.getUrl(opt.hash, opt.domain) + '"/>' + eof;
                     });
                     res.js.forEach(function(file){
                         scripts += '<script src="' + file.getUrl(opt.hash, opt.domain) + '"></script>' + eof;
@@ -204,7 +217,6 @@ module.exports = function(ret, conf, settings, opt){
             } else if(file.isAssets){
                 map.files.assets.push({
                     file : opt.md5 ? file.getHashRelease() : file.release,
-                    dir : '/s/uae/g/06/',
                     type : file.rExt.replace(/^\./, '')
                 });
             }
