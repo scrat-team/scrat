@@ -105,7 +105,7 @@ module.exports = function (ret, conf, settings, opt){
             views.push(file);
         } else if(file.isMod && (file.isJsLike || file.isCssLike)){
             if(file.isJsLike){
-                var match = file.subpath.match(/^\/components\/(.*?([^\/]+))\/\2\.js$/i);
+                var match = file.subpath.match(/^\/components\/(.*?([^\/]+))\/\2\.(js|jsx)$/i);
                 if(match && match[1] && !map.alias.hasOwnProperty(match[1])){
                     map.alias[match[1]] = id;
                 }
