@@ -11,8 +11,7 @@ fis.olpm = function(info){
     if(typeof info === 'string') {
         info = {
             code : info,
-            name : arguments[1] || '',
-            description : arguments[2] || ''
+            pack : arguments[1]
         };
     }
     info.pack = info.pack || fis.olpm.PACK_TYPE_EXTERNAL;

@@ -18,11 +18,9 @@ var wrapError = function(err){
 
 module.exports = function(ret, conf, settings, opt){
     var olpm = fis.config.get('olpm');
-    if(olpm.code && olpm.name){
+    if(olpm.code){
         var map = {
-            name : olpm.name,
             code : olpm.code,
-            description : olpm.description || '',
             files : {
                 layouts : [],
                 units : [],
@@ -233,7 +231,5 @@ module.exports = function(ret, conf, settings, opt){
         }
     } else if(!olpm.code) {
         fis.log.error('missing project code, use `fis.config.set("olpm.code", value);` in fis-conf.js');
-    } else if(!olpm.name){
-        fis.log.error('missing project name, use `fis.config.set("olpm.name", value);` in fis-conf.js');
     }
 };
