@@ -13,7 +13,11 @@ module.exports = {
     modules : {
         parser : {
             handlebars : 'handlebars',
-            styl       : 'stylus'
+            styl       : 'stylus',
+            md         : 'marked'
+        },
+        lint : {
+            js: 'jshint'
         },
         postprocessor : {
             js : plugins.define

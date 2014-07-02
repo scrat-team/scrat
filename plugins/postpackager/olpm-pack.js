@@ -130,6 +130,8 @@ module.exports = function(ret, conf, settings, opt){
                         } else {
                             m = wrapError('unit [' + name + '] is not found');
                         }
+                    } else if(!opt.pack){
+                        m = '';
                     }
                     return m;
                 });
