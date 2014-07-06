@@ -1,6 +1,6 @@
 {
     "name": "scrat",
-    "version": "0.2.4",
+    "version": "0.2.4-1",
     "description": "uc front-end integrated solution",
     "main": "index.js",
     "preferGlobal": true,
@@ -21,7 +21,7 @@
         "scrat-command-install" : "0.1.4",
         "scrat-command-server"  : "0.0.11",
         "scrat-parser-stylus"  : "0.0.4",
-        "fis-lint-jshint": "0.0.8",
+        "fis-lint-jshint": "0.0.9",
         "fis-parser-marked": "0.0.2",
         "fis-parser-handlebars" : "0.0.1"
     },
