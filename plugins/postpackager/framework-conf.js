@@ -79,7 +79,7 @@ module.exports = function (ret, conf, settings, opt){
     map.combo = !!opt.pack;
     map.urlPattern = map.urlPattern || '/c/%s';
     map.comboPattern = map.comboPattern || '/??%s';
-    map.hash = map.hash || fis.util.md5(Date.now() + '-' + Math.random());
+    map.hash = fis.util.md5(Date.now() + '-' + Math.random());
     map.alias = {};
     map.deps = {};
     makeComponentModulesAlias(ret.src['/component.json'], map, ret);

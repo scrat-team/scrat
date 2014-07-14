@@ -1,6 +1,6 @@
 {
     "name": "scrat",
-    "version": "0.2.4-4",
+    "version": "0.2.4-5",
     "description": "uc front-end integrated solution",
     "main": "index.js",
     "preferGlobal": true,
