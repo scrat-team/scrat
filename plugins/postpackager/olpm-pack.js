@@ -135,6 +135,7 @@ module.exports = function(ret, conf, settings, opt){
                     }
                     return m;
                 });
+                collect(file);
                 var eof = opt.optimize ? '' : '\n';
                 var styles = '', scripts = '';
                 if(opt.pack){
