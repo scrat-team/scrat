@@ -27,7 +27,7 @@ function makeComponentModulesAlias(componentFile, map, ret) {
             //必须使用明确的版本号
             if(/^\d\./.test(version)){
                 //获取模块名，处理路径分隔符
-                var module_name = name.toLowerCase().split('/').join('-');
+                var module_name = name.split('/').join('-');
                 //根据版本号找到模块目录
                 var dirname = '/component_modules/' + module_name + '/' + version + '/';
                 //获取模块的component.json文件
@@ -50,7 +50,21 @@ function makeComponentModulesAlias(componentFile, map, ret) {
                     } else if(file = ret.src[dirname + 'index.css']){
                         map.alias[alias] = file.getId();
                     } else {
-                        fis.log.error('can`t find module [' + name + '@' + version + '] main file');
+                        if(json.scripts && json.scripts.length === 1){
+                            if(file = ret.src[dirname + json.scripts[0]]){
+                                map.alias[alias] = file.getId();
+                            }
+                        } else if(json.styles && json.styles.length === 1){
+                            if(file = ret.src[dirname + json.styles[0]]){
+                                map.alias[alias] = file.getId();
+                            }
+                        } else if(json.files && json.files.length === 1){
+                            if(file = ret.src[dirname + json.files[0]]){
+                                map.alias[alias] = file.getId();
+                            }
+                        } else {
+                            fis.log.error('can`t find module [' + name + '@' + version + '] main file');
+                        }
                     }
                 } else if(file = ret.src[dirname + 'index.js']){
                     map.alias[alias] = file.getId();
