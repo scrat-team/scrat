@@ -58,10 +58,6 @@ function makeComponentModulesAlias(componentFile, map, ret) {
                             if(file = ret.src[dirname + json.styles[0]]){
                                 map.alias[alias] = file.getId();
                             }
-                        } else if(json.files && json.files.length === 1){
-                            if(file = ret.src[dirname + json.files[0]]){
-                                map.alias[alias] = file.getId();
-                            }
                         } else {
                             fis.log.error('can`t find module [' + name + '@' + version + '] main file');
                         }
