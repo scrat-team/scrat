@@ -3,6 +3,7 @@ fis.require.prefixes = [ 'scrat', 'fis' ];
 fis.cli.name = 'scrat';
 fis.cli.info = fis.util.readJSON(__dirname + '/package.json');
 fis.cli.version = require('./version.js');
+fis.cli.help.commands = [ 'release', 'install', 'server', 'init' ];
 
 var defaultConfig = require('./configs/default.js');
 fis.config.merge(defaultConfig);
