@@ -1,123 +1,49 @@
-使用说明
----------
+![模块化开发](https://github.com/scrat-team/scrat-site/raw/master/views/img/cubes.png)
 
-## 环境搭建
+## scrat官网项目
 
-1. 安装开发工具 [scrat](https://github.com/scrat-team/scrat)
+> http://scrat-team.github.io/
+>
+> ![二维码](https://github.com/scrat-team/scrat-site/raw/master/views/img/qrcode.png)
 
-    ```shell
-    npm install -g scrat
-    ```
-
-    > 如果安装中遇到权限问题，可使用 ``sudo`` 安装，或者 ``sudo chown -R $USER /usr/local/lib/node_modules``
-
-1. clone示例项目
-    
-    ```shell
-    git clone https://github.com/scrat-team/project.git
-    ```
-    
-    进入项目目录（后续命令需要在项目目录下执行）
-    
-    ```shell
-    cd project
-    ```
-
-1. 使用 [scrat](https://github.com/scrat-team/scrat) 构建你的项目
-
-    ```shell
-    scrat release
-    ```
-
-1. 启动调试服务器
-
-    ```shell
-    scrat server start
-    ```
-
-1. 浏览项目效果 http://127.0.0.1:8082/
-
-## 目录结构与规范
-
-```
-project (master)
-  ┣ component_modules (git@master)
-  ┃  ┣ zepto
-  ┃  ┃  ┗ 1.0.2
-  ┃  ┃     ┣ component.json
-  ┃  ┃     ┗ zepto.js
-  ┃  ┗ underscore
-  ┃     ┗ 1.0.0
-  ┃        ┗ underscore.js
-  ┣ components
-  ┃  ┣ list
-  ┃  ┃  ┣ list.js
-  ┃  ┃  ┣ list.css
-  ┃  ┃  ┗ list.handlebars
-  ┃  ┗ nav
-  ┃     ┣ img
-  ┃     ┃   ┗ icon.png
-  ┃     ┣ nav.js
-  ┃     ┣ nav.css
-  ┃     ┗ nav.handlebars
-  ┣ views
-  ┃  ┣ mod.js
-  ┃  ┣ index.js
-  ┃  ┣ index.css
-  ┃  ┗ index.html
-  ┣ lib
-  ┃  ┣ cluster.js
-  ┃  ┗ config.js
-  ┣ Procfile
-  ┣ index.js
-  ┣ package.json
-  ┣ component.json
-  ┗ fis-conf.js
+```bash
+npm install -g scrat
+scrat -v
 ```
 
-目录结构与说明：
+![工具版本](https://github.com/scrat-team/scrat-site/raw/master/components/pages/quick-start/version.gif)
 
-* ``component_modules目录``： 存放公共的组件仓库，采用兼容的 [component](https://github.com/component/component) 规范，来自另一个仓库，``非当前项目代码``。
-* ``components目录``： 存放当前项目组件，不要求使用component规范，无需 ``component.json`` 描述文件
-* ``views目录``：存放页面，以及 ``非模块化`` 的静态资源
-* lib目录：非强制规范，建议用作nodejs后端代码的相关文件存放
-* ``Procfile文件``：UAE配置文件，其中可指定nodejs运行的入口文件
-* index.js：nodejs后端运行的入口文件，由 ``Procfile文件`` 指定，非强制规范
-* ``package.json``：nodejs后端所需要的依赖描述文件，即npm的 [package.json](https://www.npmjs.org/doc/files/package.json.html) 文件
-* ``component.json``：[component](https://github.com/component/component) 的组件描述文件，这里用来描述当前项目对 ``component_modules目录`` 中模块的依赖。
-* ``fis-conf.js``：[scrat](https://github.com/fis/scrat) 工具的配置文件，可指定项目名、项目版本、模块别名等构建信息
+## 功能
 
-## 模块化开发
+- 模块化
+    - [x] [模块化开发](http://scrat-team.github.io/#!/modular)
+    - [x] [按版本发布](http://scrat-team.github.io/#!/settings?title=version)
+    - [x] [模块生态](http://scrat-team.github.io/#!/components)
+- 性能优化
+    - [x] [按需加载](http://scrat-team.github.io/#!/framework?title=scrat.js)
+    - [x] [请求合并](http://scrat-team.github.io/#!/framework?title=3. 网络请求)
+    - [x] [本地缓存](http://scrat-team.github.io/#!/framework?title=4. 本地缓存)
+- 自动化
+    - [x] [代码压缩](http://scrat-team.github.io/#!/settings?title=settings.optimizer.uglify-js)
+    - [x] [代码校验](http://scrat-team.github.io/#!/settings?title=settings.lint.jshint)
+    - [x] [CSS雪碧图](http://scrat-team.github.io/#!/settings?title=settings.spriter.csssprites)
+- 本地调试
+    - [x] [本地服务器](http://scrat-team.github.io/#!/command?title=scrat server start)
+    - [x] [文件监听](http://scrat-team.github.io/#!/command?title=本地开发)
+    - [x] [自动刷新](http://scrat-team.github.io/#!/command?title=本地开发)
+- 其他功能
+    - [x] [资源内嵌](http://scrat-team.github.io/#!/todo)
+    - [x] [多语言编译](http://scrat-team.github.io/#!/settings?title=settings.parser.stylus)
+    - [x] [项目脚手架](http://scrat-team.github.io/#!/command?title=scrat init)
 
-* 模块目录
-    * ``components`` 和 ``component_modules`` 目录下的文件文件均为模块化文件，不要将 ``非模块化`` 资源（主要是js）放到这些目录下
-    * ``component_modules`` 目录下的模块可遵从 [component](https://github.com/component/component) 规范，提供 ``component.json`` 描述文件，component.json中的name属性为模块的别名。模块的存放规则为： ``component_modules/{模块名}/{模块版本}/**``
-    * ``comopnents`` 目录下的模块为项目模块，无需服从component规范，文件存放规则为： ``component/{模块名}/**``。
-* 模块id与别名（alias）
-    * 每个js或css文件都有一个 ``完整id``
-        * component_modules中文件的完整id形如：``component_modules/zepto/{版本号}/zepto.js``
-        * components中文件的完整id形如：``{项目名}/{项目版本}/detail/detail.js``
-    * 部分文件有别名
-        * component_modules中的模块，如果有 ``component.json`` 描述文件，则component.json中main字段规定的文件，其别名为name字段的值
-        * components中，如果文件名和目录同名，则将目录名作为别名记录
-* 依赖声明
-* js模块化开发
-    * 依赖css
-    * 使用handlebars
-* 工具处理与配置
 
-## 配置文件说明
+## 文档
 
-## 开发工具使用技巧
-
-* 本地开发中使用文件监听、浏览器自动刷新。这个功能实际上是 ``scrat release`` 命令的两个参数，文件监听 ``--watch`` 或 ``-w``， 自动刷新 ``--live`` 或 ``-L``，参数的位置任意，使用缩短参数的时候可以连写，因此以下用法均等价：
-
-    ```shell
-    scrat release --live --watch
-    scrat release --watch --live
-    scrat release -L -w
-    scrat release -Lw
-    scrat release -wL
-    ```
-    
-    启动文件监听后，不要关闭命令行窗口，编写代码保存即会自动构建、发布、刷新浏览器。如果修改了项目配置文件 ``fis-conf.js`` 需要停止当前监听中的 scrat release 命令，``重新启动``。
+* [快速开始](http://scrat-team.github.io/#!/quick-start)
+* [模块开发](http://scrat-team.github.io/modular)
+* [前端框架](http://scrat-team.github.io/framework)
+* [模块生态](http://scrat-team.github.io/components)
+* [工具命令](http://scrat-team.github.io/command)
+* [工具配置](http://scrat-team.github.io/settings)
+* [项目实战](http://scrat-team.github.io/practice)
+* [幕后花絮](https://github.com/fouber/blog/issues/2)
