@@ -22,7 +22,7 @@ module.exports = {
         postprocessor : {
             js : plugins.define
         },
-        packager : [
+        prepackager : [
             plugins.uaeConf,
             plugins.frameworkConf
         ]
