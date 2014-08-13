@@ -1,6 +1,8 @@
+## webapp模块化开发框架
+
 ![模块化开发](https://github.com/scrat-team/scrat-site/raw/master/views/img/cubes.png)
 
-## scrat官网项目
+## 官网
 
 > http://scrat-team.github.io/
 >
