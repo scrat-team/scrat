@@ -1,7 +1,7 @@
 var plugins = {
     define : require('../plugins/postprocessor/define.js'),
-    uaeConf : require('../plugins/postpackager/uae-conf.js'),
-    frameworkConf : require('../plugins/postpackager/framework-conf.js')
+    uaeConf : require('../plugins/prepackager/uae-conf.js'),
+    frameworkConf : require('../plugins/prepackager/framework-conf.js')
 };
 module.exports = {
     urlPrefix : '',
