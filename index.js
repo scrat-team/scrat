@@ -30,6 +30,17 @@ fis.olpm.PACK_TYPE_INLINE   = 1;
 fis.olpm.PACK_TYPE_EXTERNAL = 2;
 //fis.olpm.PACK_TYPE_COMBO    = 3;
 
+fis.lego = function (info) {
+    fis.config.set('lego', info);
+    var domain = 'http://image.uc.cn';
+    if (info.hasOwnProperty('domain') && info.domain) {
+        domain = info.domain.replace(/\/$/, '');
+    }
+    fis.config.set('roadmap.domain', domain);
+    fis.config.set('roadmap.path', require('./configs/lego.js'));
+    fis.config.set('modules.prepackager', require('./plugins/postpackager/lego-pack.js'));
+};
+
 //alias
 Object.defineProperty(global, 'scrat', {
     enumerable : true,

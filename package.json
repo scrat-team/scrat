@@ -1,31 +1,35 @@
 {
-    "name": "scrat",
-    "version": "0.2.4-14",
-    "description": "uc front-end integrated solution",
-    "main": "index.js",
-    "preferGlobal": true,
-    "bin": {
-        "scrat": "bin/scrat"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [ "fis", "uc" ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/fouber/scrat.git"
-    },
-    "dependencies": {
-        "fis": "1.7.14",
-        "scrat-command-init" : "0.1.1-4",
-        "scrat-command-install" : "0.1.5-1",
-        "scrat-command-server"  : "0.0.11",
-        "scrat-parser-stylus"  : "0.0.4",
-        "fis-lint-jshint": "0.0.9",
-        "fis-parser-marked": "0.0.5",
-        "fis-parser-handlebars" : "0.0.1",
-        "fis-optimizer-html-minifier": "0.0.9"
-    },
-    "author": "fouber",
-    "license": "MIT"
+  "name": "scrat",
+  "version": "0.2.4-14",
+  "description": "uc front-end integrated solution",
+  "main": "index.js",
+  "preferGlobal": true,
+  "bin": {
+    "scrat": "bin/scrat"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fis",
+    "uc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fouber/scrat.git"
+  },
+  "dependencies": {
+    "fis": "1.7.14",
+    "fis-lint-jshint": "0.0.9",
+    "fis-optimizer-html-minifier": "0.0.9",
+    "fis-parser-handlebars": "0.0.1",
+    "fis-parser-marked": "0.0.5",
+    "jsdom": "^1.0.0-pre.6",
+    "scrat-command-init": "0.1.1-4",
+    "scrat-command-install": "0.1.5-1",
+    "scrat-command-server": "0.0.11",
+    "scrat-parser-stylus": "0.0.4"
+  },
+  "author": "fouber",
+  "license": "MIT"
 }

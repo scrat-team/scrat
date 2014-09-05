@@ -1,0 +1,63 @@
+module.exports = [{
+    reg: 'map.json',
+    release: false
+}, {
+    // component.json, *.md, _xxx.oo, xxx.inline.oo, *.sh, *.bat
+    reg: /^\/(component\.json|.*\.md|([^\/]+\/)*_[^\/]+\.\w+|.*\.inline\.\w+|.*\.sh|.*\.bat)$/i,
+    release: false
+}, {
+    reg: /^\/views\/([^\/]+)\/\1\.html$/i,
+    release: '/views/$1.html',
+    isView: true,
+}, {
+    reg: /^\/views\/([^\/]+)\.html$/i,
+    release: '/views/$1.html',
+    isView: true
+}, {
+    reg: /^\/views\/(.*)$/i,
+    release : '/lego/${lego.code}/v/$1',
+    url: '/s/uae/g/06/lego/${lego.code}/v/$1',
+    isAsset: true
+}, {
+    reg: /^\/units\/([^\/]+\/data(.[^\/]+)?\.js)$/i,
+    release: false
+}, {
+    reg: /^\/units\/(([^\/]+)\/\2\.ejs)$/i,
+    release: '/units/$1',
+    isHtmlLike: true,
+    isUnit: true
+}, {
+    reg: /^\/units\/(([^\/]+)\/\2\.(?:js|css|styl))$/i,
+    release: '/lego/${lego.code}/u/$1',
+    url: '/s/uae/g/06/lego/${lego.code}/u/$1',
+    isUnit: true,
+    isMod: true,
+}, {
+    reg: /^\/units\/(.*\.(?:js|css|styl))$/i,
+    release: '/lego/${lego.code}/u/$1',
+    url: '/s/uae/g/06/lego/${lego.code}/u/$1',
+    isMod: true,
+}, {
+    reg: /^\/units\/(.*\/thumb\.png)$/i,
+    release : '/units/$1'
+}, {
+    reg: /^\/units\/(.*)$/i,
+    release: '/lego/${lego.code}/u/$1',
+    url: '/s/uae/g/06/lego/${lego.code}/u/$1',
+    isAsset: true
+}, {
+    reg: /^\/components\/(.*\/(?:js|css|styl))$/i,
+    release: '/lego/${lego.code}/c/$1',
+    url: '/s/uae/g/06/lego/${lego.code}/c/$1',
+    isMod: true
+}, {
+    reg: /^\/components\/(.*)$/i,
+    release: '/lego/${lego.code}/c/$1',
+    url: '/s/uae/g/06/lego/${lego.code}/c/$1',
+    isAsset: true
+}, {
+    reg: '**',
+    useHash: false,
+    useCompile: false,
+    isOther: true
+}];
