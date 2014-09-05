@@ -4,16 +4,6 @@ var vm = require('vm');
 var jsdom = require('jsdom').jsdom;
 var LINK_PROPS_RE = /\s([a-z-]+)\s*=\s*"([^"]+)"/g;
 
-function renderError(err) {
-    var html = '<div style="color:red">';
-    html += '<h2>' + (err.message || err) + '</h2>';
-    if (err.stack) {
-        html += '<pre>' + err.stack + '</pre>';
-    }
-    html += '</div>';
-    return html;
-}
-
 // 通过指定 id 获取文件对象
 function getFile(id, ext, files) {
     // 不是别名直接返回
@@ -44,16 +34,16 @@ function getFile(id, ext, files) {
     }
 }
 
-function getDeps(file, ret, appendSelf, deps) {
+function getDeps(file, files, appendSelf, deps) {
     appendSelf = appendSelf !== false;
     deps = deps || {};
 
     file.requires.forEach(function (id) {
-        var f = getFile(id, file.ext, ret);
+        var f = getFile(id, file.ext, files);
         if (!f) fis.log.warning('module [' + id + '] not found');
         if (f && f.isJsLike === file.isJsLike &&
             f.isCssLike === file.isCssLike) {
-            getDeps(f, ret, true, deps);
+            getDeps(f, files, true, deps);
         }
     });
 
@@ -88,7 +78,7 @@ module.exports = function (ret, conf, settings, opt) {
                     styles: [],
                     scripts: []
                 }
-            }
+            };
 
             // 解析 head，提取 META、TITLE 及非组件化资源
             fis.util.map(doc.head.children, function (_, el) {
