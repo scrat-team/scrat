@@ -20,19 +20,25 @@ function getFile(id, ext, files) {
     var f = files.ids[id];
     if (f) return f;
 
-    // 使用给定后缀解析别名
+    // 查别名表
+    var alias = fis.config.get('lego.alias');
+    id = alias && alias[id] || id;
+    f = files.ids[id];
+    if (f) return f;
+
+    // 别名不带后缀
     id += '/' + id.split('/').slice(-1)[0] + ext;
     f = files.ids[id];
     if (f) return f;
 
-    // 使用相似类型后缀试解析别名
-    var lookslike = {
+    // 尝试相似类型后缀
+    var looksLike = {
         '.css': '.styl',
         '.styl': '.css'
     };
 
-    if (lookslike.hasOwnProperty(ext)) {
-        id = id.replace(ext, lookslike[ext]);
+    if (looksLike.hasOwnProperty(ext)) {
+        id = id.replace(ext, looksLike[ext]);
         f = files.ids[id];
         if (f) return f;
     }
@@ -40,24 +46,19 @@ function getFile(id, ext, files) {
 
 function getDeps(file, ret, appendSelf, deps) {
     appendSelf = appendSelf !== false;
-    deps = deps || [];
+    deps = deps || {};
 
     file.requires.forEach(function (id) {
-        var f = ret.ids[id];
-        if (!f) {
-            var alias = id;
-            f = getFile(id, file.ext, ret);
-            if (!f) fis.log.warning('module [' + alias + '] not found');
-        }
-
+        var f = getFile(id, file.ext, ret);
+        if (!f) fis.log.warning('module [' + id + '] not found');
         if (f && f.isJsLike === file.isJsLike &&
             f.isCssLike === file.isCssLike) {
             getDeps(f, ret, true, deps);
         }
     });
 
-    if (appendSelf) deps.push(file.release);
-    return deps;
+    if (appendSelf && !deps[file.release]) deps[file.release] = 1;
+    return Object.keys(deps);
 }
 
 module.exports = function (ret, conf, settings, opt) {
@@ -211,7 +212,8 @@ module.exports = function (ret, conf, settings, opt) {
                         fis.log.error('[' + data.getId() + '] is illegal: ' + e.message);
                         obj.data = {};
                     }
-                    sandbox = null;
+                    delete ret.src[data.subpath];
+                    data.release = false;
                 } else {
                     obj.data = {};
                 }
@@ -224,7 +226,7 @@ module.exports = function (ret, conf, settings, opt) {
             }
 
             var thumb = ret.src[file.subdirname + '/thumb.png'];
-            if (thumb) obj.thumb = thumb.release;
+            if (thumb) obj.thumb = opt.md5 ? thumb.getHashRelease() : thumb.release;
         } else if (file.isOther && opt.dest !== 'preview') {
             delete ret.src[file.subpath];
             file.release = false;
