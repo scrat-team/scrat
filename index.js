@@ -31,14 +31,20 @@ fis.olpm.PACK_TYPE_EXTERNAL = 2;
 //fis.olpm.PACK_TYPE_COMBO    = 3;
 
 fis.lego = function (info) {
+    if (typeof info === 'string') info = {code : info};
     fis.config.set('lego', info);
+    if (!info.code) {
+        fis.log.error('missing project code, use `fis.config.set("lego.code", value);` in fis-conf.js');
+        return process.exit(1);
+    }
+
     var domain = 'http://image.uc.cn';
     if (info.hasOwnProperty('domain') && info.domain) {
         domain = info.domain.replace(/\/$/, '');
     }
     fis.config.set('roadmap.domain', domain);
     fis.config.set('roadmap.path', require('./configs/lego.js'));
-    fis.config.set('modules.postprocessor.js', require('./plugins/postprocessor/lego.js'));
+    fis.config.del('modules.postprocessor');
     fis.config.set('modules.prepackager', require('./plugins/postpackager/lego.js'));
 };
 

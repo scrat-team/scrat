@@ -25,6 +25,7 @@ module.exports = [{
     reg: /^\/units\/(([^\/]+)\/\2\.ejs)$/i,
     release: '/units/$1',
     isHtmlLike: true,
+    isMod: true,
     isUnit: true
 }, {
     reg: /^\/units\/(([^\/]+)\/\2\.(?:js|css|styl))$/i,
@@ -44,7 +45,7 @@ module.exports = [{
     release: '/lego/${lego.code}/u/$1',
     url: '/s/uae/g/06/lego/${lego.code}/u/$1'
 }, {
-    reg: /^\/components\/(.*\/(?:js|css|styl))$/i,
+    reg: /^\/components\/(.*\.(?:js|css|styl))$/i,
     release: '/lego/${lego.code}/c/$1',
     url: '/s/uae/g/06/lego/${lego.code}/c/$1',
     useHash: false,
