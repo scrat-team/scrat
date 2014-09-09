@@ -11,51 +11,20 @@ function wrapJSMod(content, file) {
     return pre + content + post;
 }
 
-// 通过指定 id 获取文件对象
-function getFile(id, ext, files) {
-    // 不是别名直接返回
-    var f = files.ids[id];
-    if (f) return f;
-
-    // 查别名表
-    var alias = fis.config.get('lego.alias');
-    id = alias && alias[id] || id;
-    f = files.ids[id];
-    if (f) return f;
-
-    // 别名不带后缀名
-    id += '/' + id.split('/').slice(-1)[0] + ext;
-    f = files.ids[id];
-    if (f) return f;
-
-    // 尝试相似类型后缀名
-    var looksLike = {
-        '.css': '.styl',
-        '.styl': '.css'
-    };
-
-    if (looksLike.hasOwnProperty(ext)) {
-        id = id.replace(ext, looksLike[ext]);
-        f = files.ids[id];
-        if (f) return f;
-    }
-}
-
 function getDeps(file, files, appendSelf, deps) {
     appendSelf = appendSelf !== false;
     deps = deps || {css: {}, js: {}};
 
     file.requires.forEach(function (id) {
-        var f = getFile(id, file.ext, files);
+        var f = files.ids[id];
         if (!f) fis.log.warning('module [' + id + '] not found');
         else getDeps(f, files, true, deps);
     });
 
     var prefix = '/lego/' + fis.config.get('lego.code') + '/';
     var id = file.release.replace(prefix, '').replace(file.rExt, '');
-    if (appendSelf && deps[file.rExt.slice(1)] &&
-        !deps[file.rExt.slice(1)][id]) deps[file.rExt.slice(1)][id] = 1;
-
+    var type = file.rExt.slice(1);
+    if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
     return {css: Object.keys(deps.css), js: Object.keys(deps.js)};
 }
 
@@ -77,6 +46,8 @@ module.exports = function (ret, conf, settings, opt) {
         if (file.isView) {
             var doc = jsdom(file.getContent());
             var obj = {
+                name: file.filename,
+                code: lego.code + '_container_' + file.filename,
                 head: {
                     metas: [],
                     styles: [],

@@ -44,6 +44,9 @@ fis.lego = function (info) {
     }
     fis.config.set('roadmap.domain', domain);
     fis.config.set('roadmap.path', require('./configs/lego.js'));
+    fis.config.set('modules.preprocessor.css', require('./plugins/preprocessor/lego.js').CSS);
+    fis.config.set('modules.preprocessor.js', require('./plugins/preprocessor/lego.js').JS);
+    fis.config.set('modules.preprocessor.html', require('./plugins/preprocessor/lego.js').HTML);
     fis.config.del('modules.postprocessor');
     fis.config.set('modules.prepackager', require('./plugins/prepackager/lego.js'));
 };
