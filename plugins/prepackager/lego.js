@@ -205,7 +205,7 @@ module.exports = function (ret, conf, settings, opt) {
             }
 
             var thumb = ret.src[file.subdirname + '/thumb.png'];
-            if (thumb) obj.thumb = opt.md5 ? thumb.getHashRelease() : thumb.release;
+            if (thumb) obj.thumb = thumb.getUrl(opt.md5, opt.domain);
         } else if (file.isOther && opt.dest !== 'preview') {
             delete ret.src[file.subpath];
             file.release = false;

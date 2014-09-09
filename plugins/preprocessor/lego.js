@@ -1,7 +1,5 @@
 'use strict';
 
-var path = require('path');
-
 function trim(str) {
     return str ? str.replace(/['"\s]/g, '') : str;
 }
