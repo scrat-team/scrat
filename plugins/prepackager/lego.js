@@ -21,8 +21,7 @@ function getDeps(file, files, appendSelf, deps) {
         else getDeps(f, files, true, deps);
     });
 
-    var prefix = '/lego/' + fis.config.get('lego.code') + '/';
-    var id = file.release.replace(prefix, '').replace(file.rExt, '');
+    var id = file.getId().replace(file.rExt, '');
     var type = file.rExt.slice(1);
     if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
     return {css: Object.keys(deps.css), js: Object.keys(deps.js)};
