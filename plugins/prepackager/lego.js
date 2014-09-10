@@ -11,6 +11,13 @@ function wrapJSMod(content, file) {
     return pre + content + post;
 }
 
+function wrapCSSMod(content, file) {
+    if (file.rExt !== '.css') return content;
+    var pre = 'defineCSS("' + file.getId() + '",';
+    var post = ');';
+    return pre + JSON.stringify(content) + post;
+}
+
 function getDeps(file, files, appendSelf, deps) {
     appendSelf = appendSelf !== false;
     deps = deps || {css: {}, js: {}};
@@ -40,6 +47,15 @@ module.exports = function (ret, conf, settings, opt) {
         // 包装符合要求的 JS 文件
         if (file.isMod && file.isJsLike) {
             file.setContent(wrapJSMod(file.getContent(), file));
+        }
+
+        // 包装符合要求的 CSS 文件
+        if (file.isMod && file.isCssLike) {
+            var f = fis.file(file.realpath);
+            f.setContent(wrapCSSMod(file.getContent(), file));
+            f.compiled = true;
+            f.release = file.release + '.js';
+            ret.pkg[subpath + '.js'] = f;
         }
 
         if (file.isView) {
