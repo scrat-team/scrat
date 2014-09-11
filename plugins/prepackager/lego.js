@@ -36,6 +36,16 @@ function getDeps(file, files, appendSelf, deps) {
 
 module.exports = function (ret, conf, settings, opt) {
     var lego = fis.config.get('lego');
+    var config = {
+        hash: fis.util.md5(Date.now() + '-' + Math.random()),
+        combo: lego.hasOwnProperty('combo') ? lego.combo : !!opt.pack
+    };
+    if (lego.name) config.name = lego.name;
+    if (lego.version) config.version = lego.version;
+    if (lego.urlPattern) config.urlPattern = lego.urlPattern;
+    if (lego.comboPattern) config.comboPattern = lego.comboPattern;
+    var configJSON = JSON.stringify(config, null, opt.optimize ? null : 2);
+
     var map = {
         code: lego.code,
         views: [],
@@ -59,6 +69,9 @@ module.exports = function (ret, conf, settings, opt) {
         }
 
         if (file.isView) {
+            // 替换 __LEGO_CONFIG__ 占位为框架配置
+            file.setContent(file.getContent().replace(/\b__LEGO_CONFIG__\b/g, configJSON));
+
             var doc = jsdom(file.getContent());
             var obj = {
                 name: file.filename,
