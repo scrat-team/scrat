@@ -24,11 +24,11 @@
     "fis-optimizer-html-minifier": "0.0.9",
     "fis-parser-handlebars": "0.0.1",
     "fis-parser-marked": "0.0.5",
-    "jsdom": "^1.0.0-pre.6",
     "scrat-command-init": "0.1.1-4",
     "scrat-command-install": "0.1.5-1",
     "scrat-command-server": "0.0.11",
-    "scrat-parser-stylus": "0.0.4"
+    "scrat-parser-stylus": "0.0.4",
+    "xmldom": "^0.1.19"
   },
   "author": "fouber",
   "license": "MIT"

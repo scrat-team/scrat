@@ -1,8 +1,8 @@
 'use strict';
 
 var vm = require('vm');
-var jsdom = require('jsdom').jsdom;
-var LINK_PROPS_RE = /\s([a-z-]+)\s*=\s*"([^"]+)"/g;
+var DOMParser = require('xmldom').DOMParser;
+var forEach = Array.prototype.forEach;
 
 function wrapJSMod(content, file) {
     if (file.rExt !== '.js') return content;
@@ -68,12 +68,15 @@ module.exports = function (ret, conf, settings, opt) {
             ret.pkg[subpath + '.js'] = f;
         }
 
+        var obj;
         if (file.isView) {
             // 替换 __LEGO_CONFIG__ 占位为框架配置
             file.setContent(file.getContent().replace(/\b__LEGO_CONFIG__\b/g, configJSON));
 
-            var doc = jsdom(file.getContent());
-            var obj = {
+            var doc = new DOMParser({
+                errorHandler: {warning: null}
+            }).parseFromString(file.getContent());
+            obj = {
                 name: file.filename,
                 code: lego.code + '_container_' + file.filename,
                 head: {
@@ -89,39 +92,44 @@ module.exports = function (ret, conf, settings, opt) {
             };
 
             // 解析 head，提取 META、TITLE 及非组件化资源
-            fis.util.map(doc.head.children, function (_, el) {
-                switch (el.tagName) {
+            fis.util.map(doc.getElementsByTagName('head')[0].childNodes, function (_, node) {
+                if (!node.tagName) return;
+                switch (node.tagName.toUpperCase()) {
                 case 'META':
-                    if (el.name) {
+                    if (node.getAttribute('name')) {
                         obj.head.metas.push({
-                            name: el.name,
-                            content: el.content
+                            name: node.getAttribute('name'),
+                            content: node.getAttribute('content')
                         });
                     }
                     break;
                 case 'TITLE':
-                    obj.head.title = el.innerHTML;
+                    if (node.childNodes) {
+                        obj.head.title = node.childNodes[0].data;
+                    }
                     break;
                 case 'LINK':
-                    if (el.rel === 'stylesheet') {
+                    if (node.getAttribute('rel') === 'stylesheet') {
                         obj.head.styles.push({
-                            url: el.href
+                            url: node.getAttribute('href')
                         });
                     }
                     break;
                 case 'STYLE':
-                    obj.head.styles.push({
-                        content: el.innerHTML
-                    });
+                    if (node.childNodes) {
+                        obj.head.styles.push({
+                            content: node.childNodes[0].data
+                        });
+                    }
                     break;
                 case 'SCRIPT':
-                    if (el.src) {
+                    if (node.getAttribute('src')) {
                         obj.head.scripts.push({
-                            url: el.src
+                            url: node.getAttribute('src')
                         });
-                    } else {
+                    } else if (node.childNodes) {
                         obj.head.scripts.push({
-                            content: el.innerHTML
+                            content: node.childNodes[0].data
                         });
                     }
                     break;
@@ -129,55 +137,57 @@ module.exports = function (ret, conf, settings, opt) {
             });
 
             // 解析 body，提取布局、单元及非组件化资源
-            fis.util.map(doc.body.children, function (_, el) {
-                switch (el.tagName) {
+            fis.util.map(doc.getElementsByTagName('body')[0].childNodes, function (_, node) {
+                if (!node.tagName) return;
+                switch (node.tagName.toUpperCase()) {
                 case 'LINK':
-                    switch (el.rel) {
+                    var item;
+                    switch (node.getAttribute('rel').toLowerCase()) {
                     case 'layout':
                         // TODO 此处只是提取布局配置，暂不实现布局支持
-                        var html = el.outerHTML;
-                        el = {};
-                        while (LINK_PROPS_RE.exec(html)) {
-                            el[RegExp.$1] = RegExp.$2;
-                        }
-                        if (el.name) {
-                            delete el.rel;
-                            el.code = lego.code + '_layout_' + el.name;
-                            obj.body.layouts.push(el);
+                        item = {};
+                        forEach.call(node.attributes, function (attr) {
+                            item[attr.name] = attr.value;
+                        });
+                        if (item.name) {
+                            delete item.rel;
+                            item.code = lego.code + '_layout_' + item.name;
+                            obj.body.layouts.push(item);
                         }
                         break;
                     case 'unit':
-                        var html = el.outerHTML;
-                        el = {};
-                        while (LINK_PROPS_RE.exec(html)) {
-                            el[RegExp.$1] = RegExp.$2;
-                        }
-                        if (el.name) {
-                            delete el.rel;
-                            el.code = lego.code + '_unit_' + el.name;
-                            obj.body.units.push(el);
+                        item = {};
+                        forEach.call(node.attributes, function (attr) {
+                            item[attr.name] = attr.value;
+                        });
+                        if (item.name) {
+                            delete item.rel;
+                            item.code = lego.code + '_unit_' + item.name;
+                            obj.body.units.push(item);
                         }
                         break;
                     case 'stylesheet':
                         obj.body.styles.push({
-                            url: el.href
+                            url: node.getAttribute('href')
                         });
                         break;
                     }
                     break;
                 case 'STYLE':
-                    obj.body.styles.push({
-                        content: el.innerHTML
-                    });
+                    if (node.childNodes) {
+                        obj.body.styles.push({
+                            content: node.childNodes[0].data
+                        });
+                    }
                     break;
                 case 'SCRIPT':
-                    if (el.src) {
+                    if (node.getAttribute('src')) {
                         obj.body.scripts.push({
-                            url: el.src
+                            url: node.getAttribute('src')
                         });
-                    } else {
+                    } else if (node.childNodes) {
                         obj.body.scripts.push({
-                            content: el.innerHTML
+                            content: node.childNodes[0].data
                         });
                     }
                     break;
@@ -189,7 +199,7 @@ module.exports = function (ret, conf, settings, opt) {
             file.release = false;
         } else if (file.isUnit) {
             // 与目录同名的 ejs、js、css 文件都可以成为单元
-            var obj = units[file.filename];
+            obj = units[file.filename];
             if (!obj) {
                 obj = units[file.filename] = {
                     name: file.filename,
