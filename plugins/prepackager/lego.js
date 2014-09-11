@@ -6,14 +6,14 @@ var LINK_PROPS_RE = /\s([a-z-]+)\s*=\s*"([^"]+)"/g;
 
 function wrapJSMod(content, file) {
     if (file.rExt !== '.js') return content;
-    var pre = 'define("' + file.getId() + '",function(require,exports,module){';
+    var pre = 'lego.define("' + file.getId() + '",function(require,exports,module){';
     var post = '});';
     return pre + content + post;
 }
 
 function wrapCSSMod(content, file) {
     if (file.rExt !== '.css') return content;
-    var pre = 'defineCSS("' + file.getId() + '",';
+    var pre = 'lego.defineCSS("' + file.getId() + '",';
     var post = ');';
     return pre + JSON.stringify(content) + post;
 }
