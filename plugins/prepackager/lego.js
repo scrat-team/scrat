@@ -36,16 +36,6 @@ function getDeps(file, files, appendSelf, deps) {
 
 module.exports = function (ret, conf, settings, opt) {
     var lego = fis.config.get('lego');
-    var config = {
-        hash: fis.util.md5(Date.now() + '-' + Math.random()),
-        combo: lego.hasOwnProperty('combo') ? lego.combo : !!opt.pack
-    };
-    if (lego.name) config.name = lego.name;
-    if (lego.version) config.version = lego.version;
-    if (lego.urlPattern) config.urlPattern = lego.urlPattern;
-    if (lego.comboPattern) config.comboPattern = lego.comboPattern;
-    var configJSON = JSON.stringify(config, null, opt.optimize ? null : 2);
-
     var map = {
         code: lego.code,
         views: [],
@@ -68,17 +58,15 @@ module.exports = function (ret, conf, settings, opt) {
             ret.pkg[subpath + '.js'] = f;
         }
 
-        var obj;
+        var obj, meta;
         if (file.isView) {
-            // 替换 __LEGO_CONFIG__ 占位为框架配置
-            file.setContent(file.getContent().replace(/\b__LEGO_CONFIG__\b/g, configJSON));
-
             var doc = new DOMParser({
                 errorHandler: {warning: null}
             }).parseFromString(file.getContent());
             obj = {
-                name: file.filename,
                 code: lego.code + '_container_' + file.filename,
+                name: file.filename,
+                description: '',
                 head: {
                     metas: [],
                     styles: [],
@@ -90,6 +78,14 @@ module.exports = function (ret, conf, settings, opt) {
                     scripts: []
                 }
             };
+
+            // 解析 view.json，提取 name、description 等信息
+            if (fis.util.exists(file.dirname + '/view.json')) {
+                meta = fis.file(file.dirname + '/view.json');
+                meta = JSON.parse(meta.getContent());
+                fis.util.merge(obj, meta);
+                meta = null;
+            }
 
             // 解析 head，提取 META、TITLE 及非组件化资源
             fis.util.map(doc.getElementsByTagName('head')[0].childNodes, function (_, node) {
@@ -202,10 +198,19 @@ module.exports = function (ret, conf, settings, opt) {
             obj = units[file.filename];
             if (!obj) {
                 obj = units[file.filename] = {
+                    code: lego.code + '_unit_' + file.filename,
                     name: file.filename,
-                    code: lego.code + '_unit_' + file.filename
+                    description: ''
                 };
                 map.units.push(obj);
+
+                // 解析 unit.json，提取 name、description 等信息
+                if (fis.util.exists(file.dirname + '/unit.json')) {
+                    meta = fis.file(file.dirname + '/unit.json');
+                    meta = JSON.parse(meta.getContent());
+                    fis.util.merge(obj, meta);
+                    meta = null;
+                }
             }
 
             if (file.isHtmlLike) {
@@ -219,12 +224,12 @@ module.exports = function (ret, conf, settings, opt) {
                         obj.data = JSON.stringify(sandbox.module.exports);
                     } catch (e) {
                         fis.log.error('[' + data.getId() + '] is illegal: ' + e.message);
-                        obj.data = {};
+                        obj.data = '{}';
                     }
                     delete ret.src[data.subpath];
                     data.release = false;
                 } else {
-                    obj.data = {};
+                    obj.data = '{}';
                 }
                 // 以 HTML 为单元入口计算依赖
                 delete obj.css;

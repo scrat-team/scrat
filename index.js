@@ -37,7 +37,7 @@ fis.lego = function (info) {
         fis.log.error('missing project code, use `fis.config.set("lego.code", value);` in fis-conf.js');
         return process.exit(1);
     }
-
+    if (!info.version) info.version = '_';
     var domain = 'http://image.uc.cn';
     if (info.hasOwnProperty('domain') && info.domain) {
         domain = info.domain.replace(/\/$/, '');
