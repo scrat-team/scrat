@@ -143,16 +143,11 @@ module.exports = function(ret, conf, settings, opt){
                     if(res.css.length){
                         var css = '';
                         res.css.forEach(function(file){
-                            if(isInline){
-                                var attr = opt.optimize ? '' : ' data-path="' + file.subpath + '"';
-                                css += [ '<style' + attr + '>', file.getContent(), '</style>', '' ].join(eof);
-                            } else {
-                                var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
-                                css += [ comment, file.getContent(), '' ].join(eof);
-                            }
+                            var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
+                            css += [ comment, file.getContent(), '' ].join(eof);
                         });
                         if(isInline){
-                            styles = css;
+                            styles = '<style>' + css + '</style>';
                         } else {
                             var cssfile = fis.file(fis.project.getProjectPath('pkg/' + file.filename + '.css'));
                             cssfile.setContent(css);
@@ -170,16 +165,11 @@ module.exports = function(ret, conf, settings, opt){
                         //pack js
                         var js = '';
                         res.js.forEach(function(file){
-                            if(isInline){
-                                var attr = opt.optimize ? '' : ' data-path="' + file.subpath + '"';
-                                js += [ '<script' + attr + '>', file.getContent(), '</script>', '' ].join(eof);
-                            } else {
-                                var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
-                                js += [ comment, file.getContent(), '' ].join(eof);
-                            }
+                            var comment = opt.optimize ? '' : '/*-[' + file.subpath + ']-*/';
+                            js += [ comment, file.getContent(), '' ].join(eof);
                         });
                         if(isInline){
-                            scripts = js;
+                            scripts = '<script>' + js + '</script>';
                         } else {
                             var jsfile = fis.file(fis.project.getProjectPath('pkg/' + file.filename + '.js'));
                             jsfile.setContent(js);

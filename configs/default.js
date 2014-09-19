@@ -154,5 +154,13 @@ module.exports = {
                 }
             ]
         }
+    },
+    settings: {
+        spriter: {
+            csssprites: {
+                htmlUseSprite: true,
+                styleReg: /(<style(?:(?=\s)[\s\S]*?["'\s\w\/\-]>|>))([\s\S]*?)(<\/style\s*>|$)/ig
+            }
+        }
     }
 };
