@@ -211,6 +211,7 @@ module.exports = function(ret, conf, settings, opt){
                     content = content.replace(/(?=<\/body>)/i, scripts);
                 }
                 file.setContent(content);
+                opt.beforeCompile(file);
                 if(opt.pack) {
                     map.files.layouts.push(getOlpmInfo(file, olpm.code, opt, ret));
                 }
