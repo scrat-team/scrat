@@ -157,8 +157,9 @@ module.exports = function (ret, conf, settings, opt) {
                             item[attr.name] = attr.value;
                         });
                         if (item.name) {
-                            delete item.rel;
                             item.code = lego.code + '_unit_' + item.name;
+                            delete item.name;
+                            delete item.rel;
                             obj.body.units.push(item);
                         }
                         break;
