@@ -221,7 +221,7 @@ module.exports = function (ret, conf, settings, opt) {
                     var code = 'var exports=module.exports={};' + data.getContent();
                     try {
                         vm.runInNewContext(code, sandbox);
-                        obj.data = JSON.stringify(sandbox.module.exports);
+                        obj.data = sandbox.module.exports;
                     } catch (e) {
                         fis.log.error('[' + data.getId() + '] is illegal: ' + e.message);
                         obj.data = '{}';
