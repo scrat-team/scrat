@@ -170,6 +170,15 @@ module.exports = function (ret, conf, settings, opt){
     }
     var stringify = JSON.stringify(map, null, opt.optimize ? null : 4);
     views.forEach(function(file){
-        file.setContent(file.getContent().replace(/\b__FRAMEWORK_CONFIG__\b/g, stringify));
+        var content = file.getContent();
+        var hasChange = false;
+        content = content.replace(/\b__FRAMEWORK_CONFIG__\b/g, function(){
+            hasChange = true;
+            return stringify;
+        });
+        if(hasChange){
+            file.setContent(content);
+            opt.beforeCompile(file);
+        }
     });
 };
