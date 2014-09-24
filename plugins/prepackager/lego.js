@@ -34,6 +34,25 @@ function getDeps(file, files, appendSelf, deps) {
     return {css: Object.keys(deps.css), js: Object.keys(deps.js)};
 }
 
+var liveHost, livePort;
+var defaultLiveHost = (function () {
+    var net = require('os').networkInterfaces();
+    for (var key in net) {
+        if (net.hasOwnProperty(key)) {
+            var details = net[key];
+            if (details && details.length) {
+                for (var i = 0, len = details.length; i < len; i++) {
+                    var ip = String(details[i].address).trim();
+                    if (ip && /^\d+(?:\.\d+){3}$/.test(ip) && ip !== '127.0.0.1') {
+                        return ip;
+                    }
+                }
+            }
+        }
+    }
+    return '127.0.0.1';
+})();
+
 module.exports = function (ret, conf, settings, opt) {
     var lego = fis.config.get('lego');
     var map = {
@@ -190,6 +209,15 @@ module.exports = function (ret, conf, settings, opt) {
                     break;
                 }
             });
+
+            // 增加 livereload 支持
+            if (opt.live) {
+                liveHost = liveHost || fis.config.get('livereload.hostname', defaultLiveHost);
+                livePort = livePort || fis.config.get('livereload.port', 8132);
+                obj.body.scripts.push({
+                    url: 'http://' + liveHost + ':' + livePort + '/livereload.js'
+                });
+            }
 
             map.views.push(obj);
             delete ret.src[file.subpath];
