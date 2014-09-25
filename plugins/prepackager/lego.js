@@ -4,10 +4,10 @@ var vm = require('vm');
 var DOMParser = require('xmldom').DOMParser;
 var forEach = Array.prototype.forEach;
 
-function wrapJSMod(content, file) {
+function wrapJSMod(content, file, main) {
     if (file.rExt !== '.js') return content;
     var pre = 'lego.define("' + file.getId() + '",function(require,exports,module){';
-    var post = '});';
+    var post = main ? '},true);' : '});';
     return pre + content + post;
 }
 
@@ -65,7 +65,7 @@ module.exports = function (ret, conf, settings, opt) {
     fis.util.map(ret.src, function (subpath, file) {
         // 包装符合要求的 JS 文件
         if (file.isMod && file.isJsLike) {
-            file.setContent(wrapJSMod(file.getContent(), file));
+            file.setContent(wrapJSMod(file.getContent(), file, file.isUnit));
         }
 
         // 包装符合要求的 CSS 文件
