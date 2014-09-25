@@ -13,7 +13,7 @@ function wrapJSMod(content, file) {
 
 function wrapCSSMod(content, file) {
     if (file.rExt !== '.css') return content;
-    var pre = 'lego.defineCSS("' + file.getId() + '",';
+    var pre = 'lego.defineCSS("' + file.getId() + '.js",';
     var post = ');';
     return pre + JSON.stringify(content) + post;
 }
