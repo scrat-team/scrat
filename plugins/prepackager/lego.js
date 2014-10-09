@@ -246,15 +246,7 @@ module.exports = function (ret, conf, settings, opt) {
                 obj.source = file.getContent();
                 var data = ret.src[file.subdirname + '/data.js'];
                 if (data) {
-                    var sandbox = {module: {}};
-                    var code = 'var exports=module.exports={};' + data.getContent();
-                    try {
-                        vm.runInNewContext(code, sandbox);
-                        obj.data = sandbox.module.exports;
-                    } catch (e) {
-                        fis.log.error('[' + data.getId() + '] is illegal: ' + e.message);
-                        obj.data = '{}';
-                    }
+                    obj.data = data.getContent();
                     delete ret.src[data.subpath];
                     data.release = false;
                 } else {
