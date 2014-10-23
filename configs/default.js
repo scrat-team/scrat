@@ -22,10 +22,8 @@ module.exports = {
         postprocessor : {
             js : plugins.define
         },
-        prepackager : [
-            plugins.uaeConf,
-            plugins.frameworkConf
-        ]
+        prepackager : plugins.uaeConf,
+        postpackager: plugins.frameworkConf
     },
     roadmap : {
         ext : {
