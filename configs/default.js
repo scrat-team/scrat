@@ -20,10 +20,10 @@ module.exports = {
             js: 'jshint'
         },
         postprocessor : {
-            js : plugins.define
+            js : [ plugins.define ]
         },
-        prepackager : plugins.uaeConf,
-        postpackager: plugins.frameworkConf
+        prepackager : [ plugins.uaeConf ],
+        postpackager: [ plugins.frameworkConf ]
     },
     roadmap : {
         ext : {
