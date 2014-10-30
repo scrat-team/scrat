@@ -28,7 +28,8 @@ function getDeps(file, files, appendSelf, deps) {
         else getDeps(f, files, true, deps);
     });
 
-    var id = file.getId().replace(file.rExt, '');
+    var id = (fis.compile.settings.hash ? file.getHashRelease(file.getId()) :
+        file.getId()).replace(file.rExt, '');
     var type = file.rExt.slice(1);
     if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
     return {css: Object.keys(deps.css), js: Object.keys(deps.js)};
@@ -72,8 +73,9 @@ module.exports = function (ret, conf, settings, opt) {
         if (file.isMod && file.isCssLike) {
             var f = fis.file(file.realpath);
             f.setContent(wrapCSSMod(file.getContent(), file));
+            f.useHash = false;
             f.compiled = true;
-            f.release = file.release + '.js';
+            f.release = (opt.md5 ? file.getHashRelease() : file.release) + '.js';
             ret.pkg[subpath + '.js'] = f;
         }
 
