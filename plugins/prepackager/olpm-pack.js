@@ -19,12 +19,13 @@ var wrapError = function(err){
 module.exports = function(ret, conf, settings, opt){
     var olpm = fis.config.get('olpm');
     if(olpm.code){
-        var map = {
+        var map = ret.olpm = {
             code : olpm.code,
             files : {
                 layouts : [],
                 units : [],
-                assets : []
+                assets : [],
+                assetsMap: {}
             }
         };
         var isInline = olpm.pack === fis.olpm.PACK_TYPE_INLINE;
@@ -158,6 +159,7 @@ module.exports = function(ret, conf, settings, opt){
                                 file : opt.md5 ? cssfile.getHashRelease() : cssfile.release,
                                 type : cssfile.rExt.replace(/^\./, '')
                             });
+                            map.files.assetsMap[cssfile.subpath] = 1;
                         }
                     }
 
@@ -180,6 +182,7 @@ module.exports = function(ret, conf, settings, opt){
                                 file : opt.md5 ? jsfile.getHashRelease() : jsfile.release,
                                 type : jsfile.rExt.replace(/^\./, '')
                             });
+                            map.files.assetsMap[jsfile.subpath] = 1;
                         }
                     }
                 } else {
@@ -217,12 +220,6 @@ module.exports = function(ret, conf, settings, opt){
                 });
             }
         });
-        if(opt.pack){
-            var file = fis.file(fis.project.getProjectPath('release.json'));
-            file.setContent(JSON.stringify(map, null, 4));
-            file.compiled = true;
-            ret.pkg[file.subpath] = file;
-        }
     } else if(!olpm.code) {
         fis.log.error('missing project code, use `fis.config.set("olpm.code", value);` in fis-conf.js');
     }

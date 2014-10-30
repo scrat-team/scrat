@@ -24,6 +24,7 @@ fis.olpm = function(info){
     fis.config.set('roadmap.domain', domain);
     fis.config.set('roadmap.path', require('./configs/olpm.js'));
     fis.config.set('modules.prepackager', require('./plugins/prepackager/olpm-pack.js'));
+    fis.config.set('modules.postpackager', require('./plugins/postpackager/olpm-release.js'));
 };
 
 fis.olpm.PACK_TYPE_INLINE   = 1;

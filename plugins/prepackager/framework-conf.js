@@ -152,7 +152,7 @@ module.exports = function (ret, conf, settings, opt){
             delete map.deps[id];
         }
     });
-    if(opt.optimize && map.cache){
+    if(map.cache){
         var callback = map.defineCSSCallback || 'require.defineCSS';
         fis.util.map(ret.src, function(subpath, file){
             if(file.isCssLike && file.isMod){
@@ -165,8 +165,6 @@ module.exports = function (ret, conf, settings, opt){
                 ret.pkg[subpath + '.js'] = f;
             }
         });
-    } else {
-        map.cache = false;
     }
     var stringify = JSON.stringify(map, null, opt.optimize ? null : 4);
     views.forEach(function(file){
