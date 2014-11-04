@@ -2,6 +2,7 @@
 
 var vm = require('vm');
 var DOMParser = require('xmldom').DOMParser;
+var idMap = require('../preprocessor/lego.js').idMap;
 var forEach = Array.prototype.forEach;
 
 function wrapJSMod(content, file, main) {
@@ -23,13 +24,12 @@ function getDeps(file, files, appendSelf, deps) {
     deps = deps || {css: {}, js: {}};
 
     file.requires.forEach(function (id) {
-        var f = files.ids[id];
+        var f = idMap[id] ? files.ids[idMap[id]] : files.ids[id];
         if (!f) fis.log.warning('module [' + id + '] not found');
         else getDeps(f, files, true, deps);
     });
 
-    var id = (fis.compile.settings.hash ? file.getHashRelease(file.getId()) :
-        file.getId()).replace(file.rExt, '');
+    var id = file.getId().replace(file.rExt, '');
     var type = file.rExt.slice(1);
     if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
     return {css: Object.keys(deps.css), js: Object.keys(deps.js)};
@@ -62,8 +62,12 @@ module.exports = function (ret, conf, settings, opt) {
         units: []
     };
     var units = {};
-
     fis.util.map(ret.src, function (subpath, file) {
+        // 处理依赖
+        file.requires.forEach(function (r, i) {
+            file.requires[i] = idMap[r] ? idMap[r] : r;
+        });
+
         // 包装符合要求的 JS 文件
         if (file.isMod && file.isJsLike) {
             file.setContent(wrapJSMod(file.getContent(), file, file.isUnit));
@@ -75,7 +79,7 @@ module.exports = function (ret, conf, settings, opt) {
             f.setContent(wrapCSSMod(file.getContent(), file));
             f.useHash = false;
             f.compiled = true;
-            f.release = (opt.md5 ? file.getHashRelease() : file.release) + '.js';
+            f.release = (opt.md5 ? file.legoRelease : file.release) + '.js';
             ret.pkg[subpath + '.js'] = f;
         }
 

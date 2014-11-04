@@ -1,38 +1,59 @@
 'use strict';
 
+var path = require('path');
+var idMap = exports.idMap = {};
+
 function trim(str) {
     return str ? str.replace(/['"\s]/g, '') : str;
 }
 
+function getId(file) {
+    if (!file.legoRelease) file.legoRelease = file.getHashRelease();
+    if (!file.legoId) file.legoId = file.getId();
+    if (!idMap[file.legoId]) {
+        idMap[file.legoId] = file.legoId.replace(/[^\/]+$/, function (m) {
+            if (!fis.compile.settings.hash) return m;
+            return file.legoRelease.replace(/^.*?([^\/]+)$/, function (m, $1) {
+                return $1;
+            });
+        });
+    }
+    file.id = idMap[file.legoId];
+    return file.getId();
+}
+
 function resolve(id, ref, ext) {
     var orgiId = id = trim(id);
+    if (/:\/\//.test(id)) return JSON.stringify(id);
 
-    // 以 ./ ../ / 开头或包含 :// 不处理
-    if (/^(\.|\.\.)?\/|:\/\//.test(id)) return JSON.stringify(id);
-
+    var files = fis.project.getSource();
+    var file;
     var query = id.indexOf('?') !== -1 || '';
     if (query) {
         query = id.slice(query);
         id = id.slice(0, query);
     }
-    var files = fis.project.getSource();
-    var file;
+
+    // 处理相对路径
+    if (/^(\.|\.\.)?\//.test(id)) {
+        id = path.resolve(ref.subdirname, id).replace(/^\//, '');
+    }
 
     // 在工程中找到直接返回
     file = files['/' + id];
-    if (file) return JSON.stringify(file.getId() + query);
+    if (file) return JSON.stringify(getId(file) + query);
 
     // 可能是别名，查别名表
     var alias = fis.config.get('lego.alias');
     id = alias && alias[id] || id;
     file = files['/' + id];
-    if (file) return JSON.stringify(file.getId() + query);
+    if (file) return JSON.stringify(getId(file) + query);
 
     // 可能是缩略名，尝试补全
     if (!ext) return JSON.stringify(orgiId);
     id += '/' + id.split('/').slice(-1)[0] + ext;
     file = files['/' + id];
-    if (file) return JSON.stringify(file.getId() + query);
+    if (file) return JSON.stringify(getId(file) + query);
 
     // 尝试相似类型后缀名
     var looksLike = {
@@ -43,7 +64,7 @@ function resolve(id, ref, ext) {
         for (var i = 0, lastExt = ext; i < looksLike[ext].length; i++) {
             id = id.replace(lastExt, looksLike[ext][i]);
             file = files['/' + id];
-            if (file) return JSON.stringify(file.getId() + query);
+            if (file) return JSON.stringify(getId(file) + query);
             lastExt = looksLike[ext][i];
         }
     }
@@ -52,6 +73,7 @@ function resolve(id, ref, ext) {
 }
 
 exports.JS = function (content, file) {
+    getId(file);
     return !file.isMod ? content : fis.compile.extJs(content, function (m, comment, type, value) {
         if (type && value) {
             m = type + '(' + resolve(value, file, '.js') + ')';
@@ -65,6 +87,7 @@ exports.JS = function (content, file) {
 };
 
 exports.CSS = function (content, file) {
+    getId(file);
     return !file.isMod ? content : fis.compile.extCss(content, function (m, comment, url, last, filter) {
         if (url) {
             var type = fis.compile.isInline(fis.util.query(url)) ? 'embed' : 'uri';
@@ -90,6 +113,7 @@ exports.CSS = function (content, file) {
 };
 
 exports.HTML = function (content, file) {
+    getId(file);
     return !file.isMod ? content : fis.compile.extHtml(content, function (m, $1, $2, $3, $4, $5, $6, $7, $8) {
         if ($1) { // <script>
             var embed;
