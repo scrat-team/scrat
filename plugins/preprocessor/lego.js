@@ -1,25 +1,28 @@
 'use strict';
 
 var path = require('path');
-var idMap = exports.idMap = {};
+exports.legoFiles = {};
+exports.getLegoInfo = initLegoInfo;
 
 function trim(str) {
     return str ? str.replace(/['"\s]/g, '') : str;
 }
 
-function getId(file) {
-    if (!file.legoRelease) file.legoRelease = file.getHashRelease();
-    if (!file.legoId) file.legoId = file.getId();
-    if (!idMap[file.legoId]) {
-        idMap[file.legoId] = file.legoId.replace(/[^\/]+$/, function (m) {
-            if (!fis.compile.settings.hash) return m;
-            return file.legoRelease.replace(/^.*?([^\/]+)$/, function (m, $1) {
-                return $1;
-            });
+function initLegoInfo(file) {
+    var info = file.extras.lego || (file.extras.lego = {});
+    if (!info.release) info.release = file.getHashRelease();
+    if (!info.id) info.id = file.getId().replace(/[^\/]+$/, function (m) {
+        if (!fis.compile.settings.hash) return m;
+        return info.release.replace(/^.*?([^\/]+)$/, function (m, $1) {
+            return $1;
         });
-    }
-    file.id = idMap[file.legoId];
-    return file.getId();
+    });
+    exports.legoFiles[info.id] = file;
+    return info;
+}
+
+function getId(file) {
+    return initLegoInfo(file).id;
 }
 
 function resolve(id, ref, ext) {
@@ -73,7 +76,7 @@ function resolve(id, ref, ext) {
 }
 
 exports.JS = function (content, file) {
-    getId(file);
+    initLegoInfo(file);
     return !file.isMod ? content : fis.compile.extJs(content, function (m, comment, type, value) {
         if (type && value) {
             m = type + '(' + resolve(value, file, '.js') + ')';
@@ -87,7 +90,7 @@ exports.JS = function (content, file) {
 };
 
 exports.CSS = function (content, file) {
-    getId(file);
+    initLegoInfo(file);
     return !file.isMod ? content : fis.compile.extCss(content, function (m, comment, url, last, filter) {
         if (url) {
             var type = fis.compile.isInline(fis.util.query(url)) ? 'embed' : 'uri';
@@ -113,7 +116,7 @@ exports.CSS = function (content, file) {
 };
 
 exports.HTML = function (content, file) {
-    getId(file);
+    initLegoInfo(file);
     return !file.isMod ? content : fis.compile.extHtml(content, function (m, $1, $2, $3, $4, $5, $6, $7, $8) {
         if ($1) { // <script>
             var embed;
