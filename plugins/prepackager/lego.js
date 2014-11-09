@@ -1,44 +1,19 @@
 'use strict';
 
-var vm = require('vm');
 var DOMParser = require('xmldom').DOMParser;
-var legoFiles = require('../preprocessor/lego.js').legoFiles;
-var getLegoInfo = require('../preprocessor/lego.js').getLegoInfo;
 var forEach = Array.prototype.forEach;
-
-function getId(file) {
-    return getLegoInfo(file).id;
-}
-
-function wrapJSMod(content, file, main) {
-    if (file.rExt !== '.js') return content;
-    var pre = 'lego.define("' + getId(file) + '",function(require,exports,module){';
-    var post = main ? '},true);' : '});';
-    return pre + content + post;
-}
-
-function wrapCSSMod(content, file) {
-    if (file.rExt !== '.css') return content;
-    var pre = 'lego.defineCSS("' + getId(file) + '.js",';
-    var post = ');';
-    return pre + JSON.stringify(content) + post;
-}
 
 function getDeps(file, files, appendSelf, deps) {
     appendSelf = appendSelf !== false;
     deps = deps || {css: {}, js: {}};
 
-    file.requires.forEach(function (id, i) {
-        var f = legoFiles[id];
-        if (!f) {
-            f = files.ids[id];
-            file.requires[i] = getId(f);
-        }
+    file.requires.forEach(function (id) {
+        var f = files.ids[id];
         if (!f) fis.log.warning('module [' + id + '] not found');
         else getDeps(f, files, true, deps);
     });
 
-    var id = getId(file).replace(file.rExt, '');
+    var id = file.getId().replace(file.rExt, '');
     var type = file.rExt.slice(1);
     if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
     return {css: Object.keys(deps.css), js: Object.keys(deps.js)};
@@ -65,37 +40,16 @@ var defaultLiveHost = (function () {
 
 module.exports = function (ret, conf, settings, opt) {
     var lego = fis.config.get('lego');
-    var map = {
+    var map = ret.lego = {
         code: lego.code,
         views: [],
         units: []
     };
     var units = {};
+
     fis.util.map(ret.src, function (subpath, file) {
-        // 处理依赖
-        file.requires.forEach(function (id, i) {
-            var f = legoFiles[id];
-            if (!f) {
-                f = ret.ids[id];
-                if (!f) fis.log.warning('module [' + id + '] not found');
-                else file.requires[i] = getId(f);
-            }
-        });
-
-        // 包装符合要求的 JS 文件
-        if (file.isMod && file.isJsLike) {
-            file.setContent(wrapJSMod(file.getContent(), file, file.isUnit));
-        }
-
-        // 包装符合要求的 CSS 文件
-        if (file.isMod && file.isCssLike) {
-            var f = fis.file(file.realpath);
-            f.setContent(wrapCSSMod(file.getContent(), file));
-            f.useHash = false;
-            f.compiled = true;
-            f.release = (opt.md5 ? getLegoInfo(file).release : file.release) + '.js';
-            ret.pkg[subpath + '.js'] = f;
-        }
+        // 发布包装后的 CSS 文件
+        if (file.isCssLike && file.isWrapped) ret.pkg[subpath + '.js'] = file.isWrapped;
 
         var obj, meta;
         if (file.isView) {

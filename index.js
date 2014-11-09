@@ -33,6 +33,7 @@ fis.olpm.PACK_TYPE_EXTERNAL = 2;
 
 fis.lego = function (info) {
     if (typeof info === 'string') info = {code : info};
+    info.hash = fis.util.md5(Date.now() + '-' + Math.random());
     fis.config.set('lego', info);
     if (!info.code) {
         fis.log.error('missing project code, use `fis.config.set("lego.code", value);` in fis-conf.js');
@@ -44,12 +45,14 @@ fis.lego = function (info) {
         domain = info.domain.replace(/\/$/, '');
     }
     fis.config.set('roadmap.domain', domain);
-    fis.config.set('roadmap.path', require('./configs/lego.js'));
-    fis.config.set('modules.preprocessor.css', require('./plugins/preprocessor/lego.js').CSS);
-    fis.config.set('modules.preprocessor.js', require('./plugins/preprocessor/lego.js').JS);
-    fis.config.set('modules.preprocessor.html', require('./plugins/preprocessor/lego.js').HTML);
-    fis.config.del('modules.postprocessor');
-    fis.config.set('modules.prepackager', require('./plugins/prepackager/lego.js'));
+    fis.config.set('roadmap.path', require('./configs/lego'));
+    fis.config.set('modules.preprocessor.css', require('./plugins/preprocessor/lego').CSS);
+    fis.config.set('modules.preprocessor.js', require('./plugins/preprocessor/lego').JS);
+    fis.config.set('modules.preprocessor.html', require('./plugins/preprocessor/lego').HTML);
+    fis.config.set('modules.postprocessor.css', require('./plugins/postprocessor/lego').CSS);
+    fis.config.set('modules.postprocessor.js', require('./plugins/postprocessor/lego').JS);
+    fis.config.del('modules.postprocessor.html');
+    fis.config.set('modules.prepackager', require('./plugins/prepackager/lego'));
     fis.config.del('modules.postpackager');
 };
 

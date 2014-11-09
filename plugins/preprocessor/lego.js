@@ -1,33 +1,15 @@
 'use strict';
 
-var path = require('path');
-exports.legoFiles = {};
-exports.getLegoInfo = initLegoInfo;
-
 function trim(str) {
     return str ? str.replace(/['"\s]/g, '') : str;
 }
 
-function initLegoInfo(file) {
-    var info = file.extras.lego || (file.extras.lego = {});
-    if (!info.release) info.release = file.getHashRelease();
-    if (!info.id) info.id = file.getId().replace(/[^\/]+$/, function (m) {
-        if (!fis.compile.settings.hash) return m;
-        return info.release.replace(/^.*?([^\/]+)$/, function (m, $1) {
-            return $1;
-        });
-    });
-    exports.legoFiles[info.id] = file;
-    return info;
-}
-
-function getId(file) {
-    return initLegoInfo(file).id;
-}
-
 function resolve(id, ref, ext) {
-    var orgiId = id = trim(id);
-    if (/:\/\//.test(id)) return JSON.stringify(id);
+    // 相对路径或包含 :// 的 id 不处理
+    if (/^(\.|\.\.)?\/|:\/\//.test(id)) return id;
+
+    var orgiId = id;
+    id = trim(id);
 
     var files = fis.project.getSource();
     var file;
@@ -37,26 +19,21 @@ function resolve(id, ref, ext) {
         id = id.slice(0, query);
     }
 
-    // 处理相对路径
-    if (/^(\.|\.\.)?\//.test(id)) {
-        id = path.resolve(ref.subdirname, id).replace(/^\//, '');
-    }
-
     // 在工程中找到直接返回
     file = files['/' + id];
-    if (file) return JSON.stringify(getId(file) + query);
+    if (file) return JSON.stringify(file.getId() + query);
 
     // 可能是别名，查别名表
     var alias = fis.config.get('lego.alias');
     id = alias && alias[id] || id;
     file = files['/' + id];
-    if (file) return JSON.stringify(getId(file) + query);
+    if (file) return JSON.stringify(file.getId() + query);
 
     // 可能是缩略名，尝试补全
-    if (!ext) return JSON.stringify(orgiId);
+    if (!ext) return orgiId;
     id += '/' + id.split('/').slice(-1)[0] + ext;
     file = files['/' + id];
-    if (file) return JSON.stringify(getId(file) + query);
+    if (file) return JSON.stringify(file.getId() + query);
 
     // 尝试相似类型后缀名
     var looksLike = {
@@ -67,16 +44,15 @@ function resolve(id, ref, ext) {
         for (var i = 0, lastExt = ext; i < looksLike[ext].length; i++) {
             id = id.replace(lastExt, looksLike[ext][i]);
             file = files['/' + id];
-            if (file) return JSON.stringify(getId(file) + query);
+            if (file) return JSON.stringify(file.getId() + query);
             lastExt = looksLike[ext][i];
         }
     }
 
-    return JSON.stringify(orgiId);
+    return orgiId;
 }
 
 exports.JS = function (content, file) {
-    initLegoInfo(file);
     return !file.isMod ? content : fis.compile.extJs(content, function (m, comment, type, value) {
         if (type && value) {
             m = type + '(' + resolve(value, file, '.js') + ')';
@@ -90,7 +66,6 @@ exports.JS = function (content, file) {
 };
 
 exports.CSS = function (content, file) {
-    initLegoInfo(file);
     return !file.isMod ? content : fis.compile.extCss(content, function (m, comment, url, last, filter) {
         if (url) {
             var type = fis.compile.isInline(fis.util.query(url)) ? 'embed' : 'uri';
@@ -116,7 +91,6 @@ exports.CSS = function (content, file) {
 };
 
 exports.HTML = function (content, file) {
-    initLegoInfo(file);
     return !file.isMod ? content : fis.compile.extHtml(content, function (m, $1, $2, $3, $4, $5, $6, $7, $8) {
         if ($1) { // <script>
             var embed;
