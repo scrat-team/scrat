@@ -31,6 +31,52 @@ fis.olpm.PACK_TYPE_INLINE   = 1;
 fis.olpm.PACK_TYPE_EXTERNAL = 2;
 //fis.olpm.PACK_TYPE_COMBO    = 3;
 
+fis.seo = function(name){
+  if(typeof name === 'object'){
+    fis.config.merge(name);
+  } else {
+    fis.config.set('name', name || '');
+  }
+  fis.config.set('roadmap.path', [
+    {
+      reg: 'map.json',
+      release: 'config/map.json'
+    },
+    {
+      reg: /\/_[^\/]+$/,
+      release: false
+    },
+    {
+      reg: /\/readme\.md$/i,
+      release: false
+    },
+    {
+      reg: /^\/components\/(.*\.tpl)$/i,
+      isHtmlLike: true,
+      release: '/views/c/${name}/$1'
+    },
+    {
+      reg: /^\/components\/(.*)$/i,
+      isMod: true,
+      release: '/public/c/${name}/$1'
+    },
+    {
+      reg: /^\/views\/(.*\.tpl)$/i,
+      release: '/views/${name}/$1'
+    },
+    {
+      reg: /^\/views\/(.*)$/i,
+      release: '/public/v/${name}/$1'
+    },
+    {
+      reg: '**',
+      useCompile: false
+    }
+  ]);
+  fis.config.set('modules', {});
+  fis.config.set('modules.packager', 'map');
+};
+
 //alias
 Object.defineProperty(global, 'scrat', {
     enumerable : true,
