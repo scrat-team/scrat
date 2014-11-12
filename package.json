@@ -1,6 +1,6 @@
 {
     "name": "scrat",
-    "version": "0.2.7-1",
+    "version": "0.2.8-1",
     "description": "uc front-end integrated solution",
     "main": "index.js",
     "preferGlobal": true,
@@ -24,7 +24,8 @@
         "fis-lint-jshint": "0.0.9",
         "fis-parser-marked": "0.0.5",
         "fis-parser-handlebars" : "0.0.1",
-        "fis-optimizer-html-minifier": "0.0.9"
+        "fis-optimizer-html-minifier": "0.0.9",
+        "xmldom": "0.1.19"
     },
     "author": "fouber",
     "license": "MIT"

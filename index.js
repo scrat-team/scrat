@@ -31,6 +31,31 @@ fis.olpm.PACK_TYPE_INLINE   = 1;
 fis.olpm.PACK_TYPE_EXTERNAL = 2;
 //fis.olpm.PACK_TYPE_COMBO    = 3;
 
+fis.lego = function (info) {
+    if (typeof info === 'string') info = {code : info};
+    info.hash = fis.util.md5(Date.now() + '-' + Math.random());
+    fis.config.set('lego', info);
+    if (!info.code) {
+        fis.log.error('missing project code, use `fis.config.set("lego.code", value);` in fis-conf.js');
+        return process.exit(1);
+    }
+    if (!info.version) info.version = '_';
+    var domain = 'http://image.uc.cn';
+    if (info.hasOwnProperty('domain') && info.domain) {
+        domain = info.domain.replace(/\/$/, '');
+    }
+    fis.config.set('roadmap.domain', domain);
+    fis.config.set('roadmap.path', require('./configs/lego'));
+    fis.config.set('modules.preprocessor.css', require('./plugins/preprocessor/lego').CSS);
+    fis.config.set('modules.preprocessor.js', require('./plugins/preprocessor/lego').JS);
+    fis.config.set('modules.preprocessor.html', require('./plugins/preprocessor/lego').HTML);
+    fis.config.set('modules.postprocessor.css', require('./plugins/postprocessor/lego').CSS);
+    fis.config.set('modules.postprocessor.js', require('./plugins/postprocessor/lego').JS);
+    fis.config.del('modules.postprocessor.html');
+    fis.config.set('modules.prepackager', require('./plugins/prepackager/lego'));
+    fis.config.del('modules.postpackager');
+};
+
 fis.seo = function(name){
   if(typeof name === 'object'){
     fis.config.merge(name);
