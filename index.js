@@ -17,6 +17,7 @@ fis.olpm = function(info){
     }
     info.pack = info.pack || fis.olpm.PACK_TYPE_EXTERNAL;
     fis.config.set('olpm', info);
+
     var domain = 'http://image.uc.cn';
     if(info.hasOwnProperty('domain') && info.domain){
         domain = info.domain.replace(/\/$/, '');
@@ -78,28 +79,40 @@ fis.seo = function(name){
     {
       reg: /^\/components\/(.*\.tpl)$/i,
       isHtmlLike: true,
-      release: '/views/c/${name}/$1'
+      isSwig: true,
+      useMap: true,
+      useDomain: false,
+      url: 'c/$1',
+      release: '/views/c/$1'
     },
     {
       reg: /^\/components\/(.*)$/i,
       isMod: true,
-      release: '/public/c/${name}/$1'
+      release: '/public/c/$1'
     },
     {
       reg: /^\/views\/(.*\.tpl)$/i,
-      release: '/views/${name}/$1'
+      isHtmlLike: true,
+      useMap: true,
+      isSwig: true,
+      useDomain: false,
+      url: '$1',
+      release: '/views/$1'
     },
     {
       reg: /^\/views\/(.*)$/i,
-      release: '/public/v/${name}/$1'
+      release: '/public/v/$1'
     },
     {
       reg: '**',
+      useMap: false,
       useCompile: false
     }
   ]);
-  fis.config.set('modules', {});
+  fis.config.del('modules.prepackager');
   fis.config.set('modules.packager', 'map');
+  fis.config.set('modules.preprocessor.tpl', require('./plugins/preprocessor/swig.js'));
+  fis.config.set('modules.postpackager', require('./plugins/postpackager/seo.js'));
 };
 
 //alias
