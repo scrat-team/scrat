@@ -109,7 +109,6 @@ fis.seo = function(name){
       useCompile: false
     }
   ]);
-  fis.config.del('modules.prepackager');
   fis.config.set('modules.packager', 'map');
   fis.config.set('modules.preprocessor.tpl', require('./plugins/preprocessor/swig.js'));
   fis.config.set('modules.postpackager', require('./plugins/postpackager/seo.js'));
