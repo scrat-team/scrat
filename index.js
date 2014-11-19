@@ -69,7 +69,12 @@ fis.seo = function(name){
       release: 'config/map.json'
     },
     {
-      reg: /\/_[^\/]+$/,
+      reg: /\/(components|views)(?=\/).*\/_[^\/]+\.tpl$/,
+      isSwig: true,
+      release: false
+    },
+    {
+      reg: /\/(components|views)(?=\/).*\/_[^\/]+$/,
       release: false
     },
     {
