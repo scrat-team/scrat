@@ -70,6 +70,8 @@ fis.seo = function(name){
     },
     {
       reg: /\/(components|views)(?=\/).*\/_[^\/]+\.tpl$/,
+      isHtmlLike: true,
+      isJsLike: false,
       isSwig: true,
       release: false
     },
@@ -84,6 +86,7 @@ fis.seo = function(name){
     {
       reg: /^\/components\/(.*\.tpl)$/i,
       isHtmlLike: true,
+      isJsLike: false,
       isSwig: true,
       useMap: true,
       useDomain: false,
