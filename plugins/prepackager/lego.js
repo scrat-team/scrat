@@ -216,6 +216,7 @@ module.exports = function (ret, conf, settings, opt) {
                 }
             }
 
+            var cssRaw = '', jsRaw = '';
             if (file.isHtmlLike) {
                 obj.source = file.getContent();
                 var data = ret.src[file.subdirname + '/data.js'];
@@ -230,16 +231,49 @@ module.exports = function (ret, conf, settings, opt) {
                 delete obj.css;
                 delete obj.js;
                 obj = fis.util.merge(obj, getDeps(file, ret));
+                obj.type = 'html';
+
+                if (lego.mode === 'inline') {
+                    obj.css.reduce(function (all, css) {
+                        cssRaw += ret.ids[css + '.css'].isWrapped.getContent();
+                    }, cssRaw);
+                    obj.js.reduce(function (all, js) {
+                        jsRaw += ret.ids[js + '.js'].getContent();
+                    }, jsRaw);
+                    obj.source = (cssRaw ? '<script>' + cssRaw + '</script>' : '') +
+                        obj.source + (jsRaw ? '<script>' + jsRaw + '</script>' : '');
+                }
 
                 delete ret.src[file.subpath];
                 file.release = false;
-            } else if (file.isCssLike && !obj.source && !obj.js) {
+            } else if (file.isCssLike && !obj.type) {
                 // 单元无 HTML 入口和 JS 入口，以 CSS 为入口计算依赖
                 obj = fis.util.merge(obj, getDeps(file, ret));
-            } else if (file.isJsLike && !obj.source) {
+                obj.type = 'css';
+
+                if (lego.mode === 'inline') {
+                    obj.css.reduce(function (all, css) {
+                        cssRaw += ret.ids[css + '.css'].isWrapped.getContent();
+                    }, cssRaw);
+                    if (cssRaw) obj.source = '<script>' + cssRaw + '</script>';
+                }
+            } else if (file.isJsLike && obj.type !== 'html') {
                 // 单元无 HTML 入口，以 JS 为入口计算依赖
                 delete obj.css;
                 obj = fis.util.merge(obj, getDeps(file, ret));
+                obj.type = 'js';
+
+                if (lego.mode === 'inline') {
+                    obj.css.reduce(function (all, css) {
+                        cssRaw += ret.ids[css + '.css'].isWrapped.getContent();
+                    }, cssRaw);
+                    obj.js.reduce(function (all, js) {
+                        jsRaw += ret.ids[js + '.js'].getContent();
+                    }, jsRaw);
+                    obj.source = (cssRaw ? '<script>' + cssRaw + '</script>' : '') +
+                        (jsRaw ? '<script>' + jsRaw + '</script>' : '');
+                    if (!obj.source) delete obj.source;
+                }
             }
 
             var thumb = ret.src[file.subdirname + '/thumb.png'];
