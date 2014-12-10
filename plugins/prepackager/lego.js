@@ -225,7 +225,7 @@ module.exports = function (ret, conf, settings, opt) {
                     delete ret.src[data.subpath];
                     data.release = false;
                 } else {
-                    obj.data = '{}';
+                    obj.data = 'module.exports = {};';
                 }
                 // 以 HTML 为单元入口计算依赖
                 delete obj.css;
