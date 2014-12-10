@@ -114,6 +114,7 @@ fis.seo = function(name){
     {
       reg: '**',
       useMap: false,
+      useHash: false,
       useCompile: false
     }
   ]);
