@@ -3,20 +3,27 @@
 var DOMParser = require('xmldom').DOMParser;
 var forEach = Array.prototype.forEach;
 
+function isDepended(f, deps) {
+    var id = f.getId().replace(f.rExt, '');
+    var type = f.rExt.slice(1);
+    return !!deps[type][id];
+}
+
 function getDeps(file, files, appendSelf, deps) {
     appendSelf = appendSelf !== false;
     deps = deps || {css: {}, js: {}};
 
-    file.requires.forEach(function (id) {
-        var f = files.ids[id];
-        if (!f) fis.log.warning('module [' + id + '] not found');
-        else getDeps(f, files, true, deps);
-    });
-
     var id = file.getId().replace(file.rExt, '');
     var type = file.rExt.slice(1);
     if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
-    return {css: Object.keys(deps.css), js: Object.keys(deps.js)};
+
+    file.requires.forEach(function (id) {
+        var f = files.ids[id];
+        if (!f) fis.log.warning('module [' + id + '] not found');
+        else if (!isDepended(f, deps)) getDeps(f, files, true, deps);
+    });
+
+    return {css: Object.keys(deps.css).reverse(), js: Object.keys(deps.js).reverse()};
 }
 
 var liveHost, livePort;
