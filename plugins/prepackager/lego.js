@@ -53,6 +53,7 @@ module.exports = function (ret, conf, settings, opt) {
         units: []
     };
     var units = {};
+    var needInline = false;
 
     fis.util.map(ret.src, function (subpath, file) {
         // 发布包装后的 CSS 文件
@@ -83,8 +84,9 @@ module.exports = function (ret, conf, settings, opt) {
             // 解析 view.json，提取 name、description 等信息
             if (fis.util.exists(file.dirname + '/view.json')) {
                 meta = fis.file(file.dirname + '/view.json');
-                meta = JSON.parse(meta.getContent());
+                meta = JSON.parse(meta.getContent() || '{}');
                 if (meta.code) meta.code = lego.code + '_container_' + meta.code;
+                if (meta.mode === 'inline') needInline = true;
                 fis.util.merge(obj, meta);
                 meta = null;
             }
@@ -219,7 +221,7 @@ module.exports = function (ret, conf, settings, opt) {
                 // 解析 unit.json，提取 name、description 等信息
                 if (fis.util.exists(file.dirname + '/unit.json')) {
                     meta = fis.file(file.dirname + '/unit.json');
-                    meta = JSON.parse(meta.getContent());
+                    meta = JSON.parse(meta.getContent() || '{}');
                     if (meta.code) meta.code = lego.code + '_unit_' + meta.code;
                     fis.util.merge(obj, meta);
                     meta = null;
@@ -242,48 +244,17 @@ module.exports = function (ret, conf, settings, opt) {
                 delete obj.js;
                 obj = fis.util.merge(obj, getDeps(file, ret));
                 obj.type = 'html';
-
-                if (lego.mode === 'inline') {
-                    obj.css.reduce(function (all, css) {
-                        cssRaw += ret.ids[css + '.css'].isWrapped.getContent();
-                    }, cssRaw);
-                    obj.js.reduce(function (all, js) {
-                        jsRaw += ret.ids[js + '.js'].getContent();
-                    }, jsRaw);
-                    obj.source = (cssRaw ? '<script>' + cssRaw + '</script>' : '') +
-                        obj.source + (jsRaw ? '<script>' + jsRaw + '</script>' : '');
-                }
-
                 delete ret.src[file.subpath];
                 file.release = false;
             } else if (file.isCssLike && !obj.type) {
                 // 单元无 HTML 入口和 JS 入口，以 CSS 为入口计算依赖
                 obj = fis.util.merge(obj, getDeps(file, ret));
                 obj.type = 'css';
-
-                if (lego.mode === 'inline') {
-                    obj.css.reduce(function (all, css) {
-                        cssRaw += ret.ids[css + '.css'].isWrapped.getContent();
-                    }, cssRaw);
-                    if (cssRaw) obj.source = '<script>' + cssRaw + '</script>';
-                }
             } else if (file.isJsLike && obj.type !== 'html') {
                 // 单元无 HTML 入口，以 JS 为入口计算依赖
                 delete obj.css;
                 obj = fis.util.merge(obj, getDeps(file, ret));
                 obj.type = 'js';
-
-                if (lego.mode === 'inline') {
-                    obj.css.reduce(function (all, css) {
-                        cssRaw += ret.ids[css + '.css'].isWrapped.getContent();
-                    }, cssRaw);
-                    obj.js.reduce(function (all, js) {
-                        jsRaw += ret.ids[js + '.js'].getContent();
-                    }, jsRaw);
-                    obj.source = (cssRaw ? '<script>' + cssRaw + '</script>' : '') +
-                        (jsRaw ? '<script>' + jsRaw + '</script>' : '');
-                    if (!obj.source) delete obj.source;
-                }
             }
 
             var thumb = ret.src[file.subdirname + '/thumb.png'];
@@ -293,6 +264,14 @@ module.exports = function (ret, conf, settings, opt) {
             file.release = false;
         }
     });
+
+    if (needInline) {
+        var mods = map.mods = {};
+        fis.util.map(ret.src, function (subpath, file) {
+            if (file.isCssLike && file.isWrapped) mods[file.isWrapped.getId()] = file.isWrapped.getContent();
+            else if (file.isJsLike && file.isMod) mods[file.getId()] = file.getContent();
+        });
+    }
 
     var file = fis.file(fis.project.getProjectPath('release.json'));
     file.setContent(JSON.stringify(map, null, 2));
