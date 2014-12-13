@@ -63,6 +63,7 @@ module.exports = function (ret, conf, settings, opt) {
             var doc = new DOMParser({
                 errorHandler: {warning: null}
             }).parseFromString(file.getContent());
+
             obj = {
                 code: lego.code + '_container_' + file.filename,
                 name: file.filename,
@@ -83,7 +84,7 @@ module.exports = function (ret, conf, settings, opt) {
             if (fis.util.exists(file.dirname + '/view.json')) {
                 meta = fis.file(file.dirname + '/view.json');
                 meta = JSON.parse(meta.getContent());
-                meta.code = lego.code + '_container_' + meta.code;
+                if (meta.code) meta.code = lego.code + '_container_' + meta.code;
                 fis.util.merge(obj, meta);
                 meta = null;
             }
@@ -219,7 +220,7 @@ module.exports = function (ret, conf, settings, opt) {
                 if (fis.util.exists(file.dirname + '/unit.json')) {
                     meta = fis.file(file.dirname + '/unit.json');
                     meta = JSON.parse(meta.getContent());
-                    meta.code = lego.code + '_unit_' + meta.code;
+                    if (meta.code) meta.code = lego.code + '_unit_' + meta.code;
                     fis.util.merge(obj, meta);
                     meta = null;
                 }
