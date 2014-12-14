@@ -1,5 +1,7 @@
 'use strict';
 
+fis.lego.wrapped = {};
+
 function resolveModDeps(f) {
     if (!f.isMod) return;
 
@@ -13,7 +15,10 @@ function resolveModDeps(f) {
 exports.JS = function (content, file) {
     resolveModDeps(file);
     if (!file.isMod || file.isWrapped) return content;
+
+    fis.lego.wrapped[file.getId()] = file;
     file.isWrapped = true;
+
     var pre = 'lego.define("' + file.getId() + '",function(require,exports,module){';
     var post = file.isUnit ? '},true);' : '});';
     return pre + content + post;
@@ -30,7 +35,9 @@ exports.CSS = function (content, file) {
         f.isWrapped = true;
         f.useHash = false;
         f.release = file.release + '.js';
-        file.isWrapped = f;
+
+        fis.lego.wrapped[file.getId()] = f;
+        file.isWrapped = true;
     }
     return content;
 };

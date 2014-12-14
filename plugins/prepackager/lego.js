@@ -57,7 +57,7 @@ module.exports = function (ret, conf, settings, opt) {
 
     fis.util.map(ret.src, function (subpath, file) {
         // 发布包装后的 CSS 文件
-        if (file.isCssLike && file.isWrapped) ret.pkg[subpath + '.js'] = file.isWrapped;
+        if (file.isCssLike && file.isWrapped) ret.pkg[subpath + '.js'] = fis.lego.wrapped[file.getId()];
 
         var obj, meta;
         if (file.isView) {
@@ -268,8 +268,8 @@ module.exports = function (ret, conf, settings, opt) {
     if (needInline) {
         var mods = map.mods = {};
         fis.util.map(ret.src, function (subpath, file) {
-            if (file.isCssLike && file.isWrapped) mods[file.isWrapped.getId()] = file.isWrapped.getContent();
-            else if (file.isJsLike && file.isMod) mods[file.getId()] = file.getContent();
+            var f = fis.lego.wrapped[file.getId()];
+            if (f) mods[file.getId()] = f.getContent();
         });
     }
 
