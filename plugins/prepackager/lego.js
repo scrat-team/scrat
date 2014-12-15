@@ -2,30 +2,6 @@
 
 var DOMParser = require('xmldom').DOMParser;
 var forEach = Array.prototype.forEach;
-
-function isDepended(f, deps) {
-    var id = f.getId().replace(f.rExt, '');
-    var type = f.rExt.slice(1);
-    return !!deps[type][id];
-}
-
-function getDeps(file, files, appendSelf, deps) {
-    appendSelf = appendSelf !== false;
-    deps = deps || {css: {}, js: {}};
-
-    var id = file.getId().replace(file.rExt, '');
-    var type = file.rExt.slice(1);
-    if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
-
-    file.requires.forEach(function (id) {
-        var f = files.ids[id];
-        if (!f) fis.log.warning('module [' + id + '] not found');
-        else if (!isDepended(f, deps)) getDeps(f, files, true, deps);
-    });
-
-    return {css: Object.keys(deps.css).reverse(), js: Object.keys(deps.js).reverse()};
-}
-
 var liveHost, livePort;
 var defaultLiveHost = (function () {
     var net = require('os').networkInterfaces();
@@ -45,6 +21,23 @@ var defaultLiveHost = (function () {
     return '127.0.0.1';
 })();
 
+function getDeps(file, files, appendSelf, deps) {
+    appendSelf = appendSelf !== false;
+    deps = deps || {css: {}, js: {}};
+
+    var id = file.getId().replace(file.rExt, '');
+    var type = file.rExt.slice(1);
+    if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
+
+    file.requires.forEach(function (id) {
+        var f = files.ids[id];
+        if (!f) fis.log.warning('module [' + id + '] not found');
+        else if (!deps[f.rExt.slice(1)][id.replace(f.rExt, '')]) getDeps(f, files, true, deps);
+    });
+
+    return {css: Object.keys(deps.css).reverse(), js: Object.keys(deps.js).reverse()};
+}
+
 module.exports = function (ret, conf, settings, opt) {
     var lego = fis.config.get('lego');
     var map = ret.lego = {
@@ -53,12 +46,35 @@ module.exports = function (ret, conf, settings, opt) {
         units: []
     };
     var units = {};
+    var inlineMods = {};
     var needInline = false;
 
     fis.util.map(ret.src, function (subpath, file) {
-        // 发布包装后的 CSS 文件
-        if (file.isCssLike && file.isWrapped) ret.pkg[subpath + '.js'] = fis.lego.wrapped[file.getId()];
+        if (!file.isMod || file.isHtmlLike) return;
 
+        var id;
+        var rel = ret.src[file.subpathNoExt + {'.css': '.js', '.js': '.css'}[file.rExt]];
+        if (rel) {
+            id = rel.getId();
+            if (file.requires.indexOf(id) === -1) file.requires.push(id);
+        }
+
+        id = file.getId();
+        var content = file.getContent();
+        if (file.isCssLike) {
+            // 发布包装后的 CSS 文件
+            content = 'lego.defineCSS("' + id + '.js",' + JSON.stringify(content) + ');';
+            var f = fis.file(file.realpath);
+            f.setContent(content);
+            f.compiled = true;
+            f.useHash = false;
+            f.release = file.release + '.js';
+            ret.pkg[subpath + '.js'] = f;
+        }
+        inlineMods[id] = content;
+    });
+
+    fis.util.map(ret.src, function (subpath, file) {
         var obj, meta;
         if (file.isView) {
             var doc = new DOMParser({
@@ -265,13 +281,7 @@ module.exports = function (ret, conf, settings, opt) {
         }
     });
 
-    if (needInline) {
-        var mods = map.mods = {};
-        fis.util.map(ret.src, function (subpath, file) {
-            var f = fis.lego.wrapped[file.getId()];
-            if (f) mods[file.getId()] = f.getContent();
-        });
-    }
+    if (needInline) map.mods = inlineMods;
 
     var file = fis.file(fis.project.getProjectPath('release.json'));
     file.setContent(JSON.stringify(map, null, 2));

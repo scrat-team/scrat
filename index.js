@@ -50,7 +50,7 @@ fis.lego = function (info) {
     fis.config.set('modules.preprocessor.css', require('./plugins/preprocessor/lego').CSS);
     fis.config.set('modules.preprocessor.js', require('./plugins/preprocessor/lego').JS);
     fis.config.set('modules.preprocessor.html', require('./plugins/preprocessor/lego').HTML);
-    fis.config.set('modules.postprocessor.css', require('./plugins/postprocessor/lego').CSS);
+    fis.config.del('modules.postprocessor.css');
     fis.config.set('modules.postprocessor.js', require('./plugins/postprocessor/lego').JS);
     fis.config.del('modules.postprocessor.html');
     fis.config.set('modules.prepackager', require('./plugins/prepackager/lego'));

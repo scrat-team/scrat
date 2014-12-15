@@ -1,3 +1,17 @@
+/**
+ * 为所有 HTML/CSS/JS 类型文件提供别名和缩略名能力
+ *
+ * 别名：
+ * fis.lego({
+ *   alias: {
+ *     hello: 'components/hello'
+ *   }
+ * });
+ *
+ * 缩略名：
+ * 在 JS 中 components/util -> components/util/util.js
+ * 在 CSS 中 components/util -> components/util/util.css 或 components/util/util.styl
+ */
 'use strict';
 
 function trim(str) {
@@ -5,8 +19,8 @@ function trim(str) {
 }
 
 function resolve(id, ref, ext) {
-    // 相对路径或包含 :// 的 id 不处理
-    if (/^(\.|\.\.)?\/|:\/\//.test(id)) return id;
+    // ./ ../ // 开头或包含 :// 的 id 不处理
+    if (/^(\.|\.\.|\/\/)?\/|:\/\//.test(id)) return id;
 
     var orgiId = id;
     id = trim(id);
@@ -19,13 +33,9 @@ function resolve(id, ref, ext) {
         id = id.slice(0, query);
     }
 
-    // 在工程中找到直接返回
-    file = files['/' + id];
-    if (file) return JSON.stringify(file.getId() + query);
-
     // 可能是别名，查别名表
-    var alias = fis.config.get('lego.alias');
-    id = alias && alias[id] || id;
+    var alias = fis.config.get('lego.alias') || {};
+    id = alias[id] || id;
     file = files['/' + id];
     if (file) return JSON.stringify(file.getId() + query);
 
@@ -53,7 +63,7 @@ function resolve(id, ref, ext) {
 }
 
 exports.JS = function (content, file) {
-    return !file.isMod ? content : fis.compile.extJs(content, function (m, comment, type, value) {
+    return fis.compile.extJs(content, function (m, comment, type, value) {
         if (type && value) {
             m = type + '(' + resolve(value, file, '.js') + ')';
         } else if (comment) {
@@ -66,7 +76,7 @@ exports.JS = function (content, file) {
 };
 
 exports.CSS = function (content, file) {
-    return !file.isMod ? content : fis.compile.extCss(content, function (m, comment, url, last, filter) {
+    return fis.compile.extCss(content, function (m, comment, url, last, filter) {
         if (url) {
             var type = fis.compile.isInline(fis.util.query(url)) ? 'embed' : 'uri';
             url = resolve(url, file, '.css');
@@ -91,7 +101,7 @@ exports.CSS = function (content, file) {
 };
 
 exports.HTML = function (content, file) {
-    return !file.isMod ? content : fis.compile.extHtml(content, function (m, $1, $2, $3, $4, $5, $6, $7, $8) {
+    return fis.compile.extHtml(content, function (m, $1, $2, $3, $4, $5, $6, $7, $8) {
         if ($1) { // <script>
             var embed;
             $1 = $1.replace(/(\s(?:data-)?src\s*=\s*)('[^']+'|"[^"]+"|[^\s\/>]+)/ig, function (m, prefix, value) {
