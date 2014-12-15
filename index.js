@@ -53,8 +53,8 @@ fis.lego = function (info) {
     fis.config.del('modules.postprocessor.css');
     fis.config.set('modules.postprocessor.js', require('./plugins/postprocessor/lego').JS);
     fis.config.del('modules.postprocessor.html');
-    fis.config.set('modules.prepackager', require('./plugins/prepackager/lego'));
-    fis.config.del('modules.postpackager');
+    fis.config.del('modules.prepackager');
+    fis.config.set('modules.postpackager', require('./plugins/postpackager/lego'));
 };
 
 fis.seo = function(name){

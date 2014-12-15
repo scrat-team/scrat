@@ -23,19 +23,25 @@ var defaultLiveHost = (function () {
 
 function getDeps(file, files, appendSelf, deps) {
     appendSelf = appendSelf !== false;
-    deps = deps || {css: {}, js: {}};
+    deps = deps || {css: [], js: [], status: {}};
+    // status: 1-计算中, 2-已添加
 
-    var id = file.getId().replace(file.rExt, '');
-    var type = file.rExt.slice(1);
-    if (appendSelf && deps[type] && !deps[type][id]) deps[type][id] = 1;
+    var id = file.getId();
+    deps.status[id] = 1;
 
     file.requires.forEach(function (id) {
         var f = files.ids[id];
         if (!f) fis.log.warning('module [' + id + '] not found');
-        else if (!deps[f.rExt.slice(1)][id.replace(f.rExt, '')]) getDeps(f, files, true, deps);
+        else if (!deps.status[id]) getDeps(f, files, true, deps);
     });
 
-    return {css: Object.keys(deps.css).reverse(), js: Object.keys(deps.js).reverse()};
+    var type = file.rExt.slice(1);
+    if (appendSelf && deps[type] && deps.status[id] !== 2) {
+        deps[type].push(id.replace(file.rExt, ''));
+        deps.status[id] = 2;
+    }
+
+    return {css: deps.css.slice(), js: deps.js.slice()};
 }
 
 module.exports = function (ret, conf, settings, opt) {
@@ -46,20 +52,13 @@ module.exports = function (ret, conf, settings, opt) {
         units: []
     };
     var units = {};
-    var inlineMods = {};
-    var needInline = false;
 
+    var needInline = false;
+    var inlineMods = {};
     fis.util.map(ret.src, function (subpath, file) {
         if (!file.isMod || file.isHtmlLike) return;
 
-        var id;
-        var rel = ret.src[file.subpathNoExt + {'.css': '.js', '.js': '.css'}[file.rExt]];
-        if (rel) {
-            id = rel.getId();
-            if (file.requires.indexOf(id) === -1) file.requires.push(id);
-        }
-
-        id = file.getId();
+        var id = file.getId();
         var content = file.getContent();
         if (file.isCssLike) {
             // 发布包装后的 CSS 文件

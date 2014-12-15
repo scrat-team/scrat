@@ -63,7 +63,7 @@ function resolve(id, ref, ext) {
 }
 
 exports.JS = function (content, file) {
-    return fis.compile.extJs(content, function (m, comment, type, value) {
+    return !file.isMod ? content : fis.compile.extJs(content, function (m, comment, type, value) {
         if (type && value) {
             m = type + '(' + resolve(value, file, '.js') + ')';
         } else if (comment) {
@@ -76,7 +76,7 @@ exports.JS = function (content, file) {
 };
 
 exports.CSS = function (content, file) {
-    return fis.compile.extCss(content, function (m, comment, url, last, filter) {
+    return !file.isMod ? content : fis.compile.extCss(content, function (m, comment, url, last, filter) {
         if (url) {
             var type = fis.compile.isInline(fis.util.query(url)) ? 'embed' : 'uri';
             url = resolve(url, file, '.css');
@@ -101,7 +101,7 @@ exports.CSS = function (content, file) {
 };
 
 exports.HTML = function (content, file) {
-    return fis.compile.extHtml(content, function (m, $1, $2, $3, $4, $5, $6, $7, $8) {
+    return !file.isMod ? content : fis.compile.extHtml(content, function (m, $1, $2, $3, $4, $5, $6, $7, $8) {
         if ($1) { // <script>
             var embed;
             $1 = $1.replace(/(\s(?:data-)?src\s*=\s*)('[^']+'|"[^"]+"|[^\s\/>]+)/ig, function (m, prefix, value) {
