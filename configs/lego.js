@@ -37,7 +37,8 @@ module.exports = [{
     url: '/s/uae/g/06/lego/${lego.code}/${lego.hash}/u/$1/$2',
     isMod: true,
     isUnit: true,
-    useHash: false
+    useHash: false,
+    useSprite: true
 }, {
     reg: /^\/units\/([^\/]+)\/\1\.styl$/i,
     id: '${lego.hash}/u/$1/$1.css',
@@ -45,21 +46,24 @@ module.exports = [{
     url: '/s/uae/g/06/lego/${lego.code}/${lego.hash}/u/$1/$1.css',
     isMod: true,
     isUnit: true,
-    useHash: false
+    useHash: false,
+    useSprite: true
 }, {
     reg: /^\/units\/(.+\.(?:js|css))$/i,
     id: '${lego.hash}/u/$1',
     release: '/lego/${lego.code}/${lego.hash}/u/$1',
     url: '/s/uae/g/06/lego/${lego.code}/${lego.hash}/u/$1',
     isMod: true,
-    useHash: false
+    useHash: false,
+    useSprite: true
 }, {
     reg: /^\/units\/(.+)\.styl$/i,
     id: '${lego.hash}/u/$1.css',
     release: '/lego/${lego.code}/${lego.hash}/u/$1.css',
     url: '/s/uae/g/06/lego/${lego.code}/${lego.hash}/u/$1.css',
     isMod: true,
-    useHash: false
+    useHash: false,
+    useSprite: true
 }, {
     reg: /^\/units\/(.+)$/i,
     id: '${lego.hash}/u/$1',
@@ -71,14 +75,16 @@ module.exports = [{
     release: '/lego/${lego.code}/${lego.hash}/c/$1.css',
     url: '/s/uae/g/06/lego/${lego.code}/${lego.hash}/c/$1.css',
     isMod: true,
-    useHash: false
+    useHash: false,
+    useSprite: true
 }, {
     reg: /^\/components\/(.+\.(?:js|css))$/i,
     id: '${lego.hash}/c/$1',
     release: '/lego/${lego.code}/${lego.hash}/c/$1',
     url: '/s/uae/g/06/lego/${lego.code}/${lego.hash}/c/$1',
     isMod: true,
-    useHash: false
+    useHash: false,
+    useSprite: true
 }, {
     reg: /^\/components\/(.+)$/i,
     id: '${lego.hash}/c/$1',
