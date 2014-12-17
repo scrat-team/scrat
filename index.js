@@ -96,6 +96,7 @@ fis.seo = function(name){
     {
       reg: /^\/components\/(.*)$/i,
       isMod: true,
+      useSprite: true,
       release: '/public/c/$1'
     },
     {
@@ -109,6 +110,7 @@ fis.seo = function(name){
     },
     {
       reg: /^\/views\/(.*)$/i,
+      useSprite: true,
       release: '/public/v/$1'
     },
     {
