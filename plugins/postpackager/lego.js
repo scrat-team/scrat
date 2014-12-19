@@ -62,7 +62,8 @@ module.exports = function (ret, conf, settings, opt) {
         var content = file.getContent();
         if (file.isCssLike) {
             // 发布包装后的 CSS 文件
-            content = 'lego.defineCSS("' + id + '.js",' + JSON.stringify(content) + ');';
+            id += '.js';
+            content = 'lego.defineCSS(' + JSON.stringify(id) + ',' + JSON.stringify(content) + ');';
             var f = fis.file(file.realpath);
             f.setContent(content);
             f.compiled = true;
