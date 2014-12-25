@@ -47,14 +47,15 @@ fis.lego = function (info) {
     }
     fis.config.set('roadmap.domain', domain);
     fis.config.set('roadmap.path', require('./configs/lego'));
-    fis.config.set('modules.preprocessor.css', require('./plugins/preprocessor/lego').CSS);
-    fis.config.set('modules.preprocessor.js', require('./plugins/preprocessor/lego').JS);
-    fis.config.set('modules.preprocessor.html', require('./plugins/preprocessor/lego').HTML);
-    fis.config.del('modules.postprocessor.css');
-    fis.config.set('modules.postprocessor.js', require('./plugins/postprocessor/lego').JS);
-    fis.config.del('modules.postprocessor.html');
-    fis.config.del('modules.prepackager');
-    fis.config.set('modules.postpackager', require('./plugins/postpackager/lego'));
+    fis.config.set('modules.preprocessor.css', [require('./plugins/preprocessor/lego').CSS]);
+    fis.config.set('modules.preprocessor.js', [require('./plugins/preprocessor/lego').JS]);
+    fis.config.set('modules.preprocessor.html', [require('./plugins/preprocessor/lego').HTML]);
+    fis.config.set('modules.postprocessor.css', []);
+    fis.config.set('modules.postprocessor.js', [require('./plugins/postprocessor/lego').JS]);
+    fis.config.set('modules.postprocessor.html', []);
+    fis.config.set('modules.prepackager', []);
+    fis.config.set('modules.postpackager', [require('./plugins/postpackager/lego')]);
+    if (info.nightcss) fis.config.get('modules.preprocessor.css').push('nightcss');
 };
 
 fis.seo = function(name){
