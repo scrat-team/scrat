@@ -33,6 +33,8 @@ fis.olpm.PACK_TYPE_EXTERNAL = 2;
 //fis.olpm.PACK_TYPE_COMBO    = 3;
 
 fis.lego = function (info) {
+    fis.cache.clean('compile');
+
     if (typeof info === 'string') info = {code : info};
     info.hash = fis.util.md5(Date.now() + '-' + Math.random());
     fis.config.set('lego', info);
