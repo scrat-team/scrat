@@ -58,6 +58,30 @@ fis.lego = function (info) {
     fis.config.set('modules.prepackager', []);
     fis.config.set('modules.postpackager', [require('./plugins/postpackager/lego')]);
     if (info.nightcss) fis.config.get('modules.preprocessor.css').push('nightcss');
+
+    fis.config.set('settings.lint.jshint', {
+        // Enforcing options
+        camelcase: true,
+        eqeqeq: true,
+        forin: true,
+        freeze: true,
+        globals: ['__inline', '__uri', 'lego'],
+        immed: true,
+        indent: 2,
+        newcap: true,
+        noarg: true,
+        noempty: true,
+        nonew: true,
+        quotmark: 'single',
+        undef: true,
+        unused: true,
+        strict: true,
+
+        // Environments
+        browser: true,
+        jquery: true,
+        node: true
+    });
 };
 
 fis.seo = function(name){
