@@ -1,6 +1,6 @@
 {
   "name": "scrat",
-  "version": "0.3.5-3",
+  "version": "0.3.5-4",
   "description": "uc front-end integrated solution",
   "main": "index.js",
   "preferGlobal": true,
@@ -19,6 +19,7 @@
     "url": "https://github.com/fouber/scrat.git"
   },
   "dependencies": {
+    "cheerio": "^0.19.0",
     "fis": "1.7.14",
     "fis-lint-jshint": "0.0.9",
     "fis-optimizer-html-minifier": "0.0.9",
@@ -28,8 +29,7 @@
     "scrat-command-install": "0.1.5-2",
     "scrat-command-server": "0.0.11",
     "scrat-parser-stylus": "0.0.4",
-    "scrat-preprocessor-nightcss": "0.1.0",
-    "xmldom": "0.1.19"
+    "scrat-preprocessor-nightcss": "0.1.0"
   },
   "author": "fouber",
   "license": "MIT"
