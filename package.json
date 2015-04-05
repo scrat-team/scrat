@@ -1,32 +1,33 @@
 {
-    "name": "scrat",
-    "version": "0.4.0",
-    "description": "Modular front-end integrated solution for mobile",
-    "main": "index.js",
-    "preferGlobal": true,
-    "bin": {
-        "scrat": "bin/scrat"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [ "scrat", "webapp", "framework", "mobile", "fis" ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/scrat-team/scrat.git"
-    },
-    "dependencies": {
-        "fis": "1.9.11",
-        "scrat-command-init" : "0.1.2",
-        "scrat-command-install" : "0.1.5-2",
-        "scrat-command-server"  : "0.0.11",
-        "scrat-parser-stylus"  : "0.0.4",
-        "fis-lint-jshint": "0.0.9",
-        "fis-parser-marked": "0.0.5",
-        "fis-parser-handlebars" : "0.0.1",
-        "fis-optimizer-html-minifier": "0.0.9",
-        "xmldom": "0.1.19"
-    },
-    "author": "fouber",
-    "license": "MIT"
+  "name": "scrat",
+  "version": "0.4.0",
+  "description": "Modular front-end integrated solution for mobile",
+  "main": "index.js",
+  "preferGlobal": true,
+  "bin": {
+    "scrat": "bin/scrat"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [ "scrat", "webapp", "framework", "mobile", "fis" ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scrat-team/scrat.git"
+  },
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "fis": "1.9.11",
+    "fis-lint-jshint": "0.0.9",
+    "fis-optimizer-html-minifier": "0.0.9",
+    "fis-parser-handlebars": "0.0.1",
+    "fis-parser-marked": "0.0.5",
+    "scrat-command-init": "0.1.2",
+    "scrat-command-install": "0.1.5-2",
+    "scrat-command-server": "0.0.11",
+    "scrat-parser-stylus": "0.0.4",
+    "scrat-preprocessor-nightcss": "0.1.0"
+  },
+  "author": "scrat-team",
+  "license": "MIT"
 }

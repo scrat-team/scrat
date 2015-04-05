@@ -1,6 +1,6 @@
 'use strict';
 
-var DOMParser = require('xmldom').DOMParser;
+var cheerio = require('cheerio');
 var forEach = Array.prototype.forEach;
 var liveHost, livePort;
 var defaultLiveHost = (function () {
@@ -62,7 +62,8 @@ module.exports = function (ret, conf, settings, opt) {
         var content = file.getContent();
         if (file.isCssLike) {
             // 发布包装后的 CSS 文件
-            content = 'lego.defineCSS("' + id + '.js",' + JSON.stringify(content) + ');';
+            id += '.js';
+            content = 'lego.defineCSS(' + JSON.stringify(id) + ',' + JSON.stringify(content) + ');';
             var f = fis.file(file.realpath);
             f.setContent(content);
             f.compiled = true;
@@ -76,9 +77,7 @@ module.exports = function (ret, conf, settings, opt) {
     fis.util.map(ret.src, function (subpath, file) {
         var obj, meta;
         if (file.isView) {
-            var doc = new DOMParser({
-                errorHandler: {warning: null}
-            }).parseFromString(file.getContent());
+            var $ = cheerio.load(file.getContent());
 
             obj = {
                 code: lego.code + '_container_' + file.filename,
@@ -107,103 +106,86 @@ module.exports = function (ret, conf, settings, opt) {
             }
 
             // 解析 head，提取 META、TITLE 及非组件化资源
-            fis.util.map(doc.getElementsByTagName('head')[0].childNodes, function (_, node) {
-                if (!node.tagName) return;
-                switch (node.tagName.toUpperCase()) {
+            $('head').children().each(function (i, el) {
+                if (el.type !== 'tag' && el.type !== 'script' && el.type !== 'style') return;
+                var $el = $(el);
+                switch (el.name.toUpperCase()) {
                 case 'META':
-                    if (node.getAttribute('name')) {
+                    if ($el.attr('name')) {
                         obj.head.metas.push({
-                            name: node.getAttribute('name'),
-                            content: node.getAttribute('content')
+                            name: $el.attr('name'),
+                            content: $el.attr('content')
                         });
                     }
                     break;
                 case 'TITLE':
-                    if (node.childNodes) {
-                        obj.head.title = node.childNodes[0].data;
-                    }
+                    if ($el.text()) obj.head.title = $el.text();
                     break;
                 case 'LINK':
-                    if (node.getAttribute('rel') === 'stylesheet') {
+                    if ($el.attr('rel').toLowerCase() === 'stylesheet') {
                         obj.head.styles.push({
-                            url: node.getAttribute('href')
+                            url: $el.attr('href')
                         });
                     }
                     break;
                 case 'STYLE':
-                    if (node.childNodes) {
+                    if ($el.text()) {
                         obj.head.styles.push({
-                            content: node.childNodes[0].data
+                            content: $el.text()
                         });
                     }
                     break;
                 case 'SCRIPT':
-                    if (node.getAttribute('src')) {
+                    if ($el.attr('src')) {
                         obj.head.scripts.push({
-                            url: node.getAttribute('src')
+                            url: $el.attr('src')
                         });
-                    } else if (node.childNodes) {
+                    } else if ($el.text()) {
                         obj.head.scripts.push({
-                            content: node.childNodes[0].data
+                            content: $el.text()
                         });
                     }
                     break;
                 }
             });
 
-            // 解析 body，提取布局、单元及非组件化资源
-            fis.util.map(doc.getElementsByTagName('body')[0].childNodes, function (_, node) {
-                if (!node.tagName) return;
-                switch (node.tagName.toUpperCase()) {
+            $('body').children().each(function (i, el) {
+                if (el.type !== 'tag' && el.type !== 'script' && el.type !== 'style') return;
+                var $el = $(el);
+                switch (el.name.toUpperCase()) {
                 case 'LINK':
-                    var item;
-                    switch (node.getAttribute('rel').toLowerCase()) {
-                    case 'layout':
-                        // TODO 此处只是提取布局配置，暂不实现布局支持
-                        item = {};
-                        forEach.call(node.attributes, function (attr) {
-                            item[attr.name] = attr.value;
-                        });
-                        if (item.name) {
-                            delete item.rel;
-                            item.code = lego.code + '_layout_' + item.name;
-                            obj.body.layouts.push(item);
-                        }
-                        break;
+                    switch ($el.attr('rel').toLowerCase()) {
                     case 'unit':
-                        item = {};
-                        forEach.call(node.attributes, function (attr) {
-                            item[attr.name] = attr.value;
-                        });
-                        if (item.name) {
-                            item.code = lego.code + '_unit_' + item.name;
-                            delete item.name;
-                            delete item.rel;
-                            obj.body.units.push(item);
+                        var attr = fis.util.clone($el.attr());
+                        if (attr.name) {
+                            attr.code = lego.code + '_unit_' + attr.name;
+                            delete attr.name;
+                            delete attr.rel;
+                            obj.body.units.push(attr);
                         }
                         break;
                     case 'stylesheet':
                         obj.body.styles.push({
-                            url: node.getAttribute('href')
+                            url: $el.attr('href')
                         });
                         break;
                     }
                     break;
                 case 'STYLE':
-                    if (node.childNodes) {
+                    if ($el.text()) {
                         obj.body.styles.push({
-                            content: node.childNodes[0].data
+                            content: $el.text()
                         });
                     }
                     break;
                 case 'SCRIPT':
-                    if (node.getAttribute('src')) {
+                    if ($el.attr('src')) {
                         obj.body.scripts.push({
-                            url: node.getAttribute('src')
+                            url: $el.attr('src')
                         });
-                    } else if (node.childNodes) {
+                    } else if ($el.text()) {
                         obj.body.scripts.push({
-                            content: node.childNodes[0].data
+                            content: $el.text()
                         });
                     }
                     break;
@@ -243,7 +225,6 @@ module.exports = function (ret, conf, settings, opt) {
                 }
             }
 
-            var cssRaw = '', jsRaw = '';
             if (file.isHtmlLike) {
                 obj.source = file.getContent();
                 var data = ret.src[file.subdirname + '/data.js'];
