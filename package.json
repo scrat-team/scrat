@@ -1,7 +1,7 @@
 {
     "name": "scrat",
-    "version": "0.3.3",
-    "description": "uc front-end integrated solution",
+    "version": "0.4.0",
+    "description": "Modular front-end integrated solution for mobile",
     "main": "index.js",
     "preferGlobal": true,
     "bin": {
@@ -10,13 +10,13 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "keywords": [ "fis", "uc" ],
+    "keywords": [ "scrat", "webapp", "framework", "mobile", "fis" ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/fouber/scrat.git"
+        "url": "https://github.com/scrat-team/scrat.git"
     },
     "dependencies": {
-        "fis": "1.7.14",
+        "fis": "1.9.11",
         "scrat-command-init" : "0.1.2",
         "scrat-command-install" : "0.1.5-2",
         "scrat-command-server"  : "0.0.11",
