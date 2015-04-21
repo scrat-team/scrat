@@ -7,13 +7,15 @@ module.exports = {
     urlPrefix : '',
     project : {
         fileType : {
-            text : 'handlebars, jade, ejs, jsx, styl'
+            text : 'handlebars, jade, ejs, jsx, styl, sass, less'
         }
     },
     modules : {
         parser : {
             handlebars : 'handlebars',
             styl       : 'stylus',
+            sass       : 'sass',
+            less       : 'less',
             md         : 'marked'
         },
         lint : {
@@ -28,7 +30,9 @@ module.exports = {
     roadmap : {
         ext : {
             jsx : 'js',
-            styl : 'css'
+            styl : 'css',
+            sass : 'css',
+            less : 'css'
         },
         path : [
             {
@@ -66,7 +70,7 @@ module.exports = {
                 release : '/views/${name}/${version}/$1'
             },
             {
-                reg : /^\/component_modules\/(.*)\.(styl|css)$/i,
+                reg : /^\/component_modules\/(.*)\.(styl|sass|less|css)$/i,
                 id : '$1.css',
                 isMod : true,
                 useSprite : true,
@@ -88,7 +92,7 @@ module.exports = {
                 release : '/public/c/$1'
             },
             {
-                reg : /^\/components\/(.*)\.(styl|css)$/i,
+                reg : /^\/components\/(.*)\.(styl|sass|less|css)$/i,
                 id : '${name}/${version}/$1.css',
                 isMod : true,
                 useSprite : true,
