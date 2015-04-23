@@ -72,7 +72,7 @@ module.exports = {
                 release : '/views/${name}/${version}/$1'
             },
             {
-                reg : /^\/component_modules\/(.*)\.(?:styl|scss|sass|less|css)$/i,
+                reg : /^\/component_modules\/(.*)\.(styl|scss|sass|less|css)$/i,
                 id : '$1.css',
                 isMod : true,
                 useSprite : true,
@@ -94,7 +94,7 @@ module.exports = {
                 release : '/public/c/$1'
             },
             {
-                reg : /^\/components\/(.*)\.(?:styl|scss|sass|less|css)$/i,
+                reg : /^\/components\/(.*)\.(styl|scss|sass|less|css)$/i,
                 id : '${name}/${version}/$1.css',
                 isMod : true,
                 useSprite : true,
