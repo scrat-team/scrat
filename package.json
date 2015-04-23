@@ -1,6 +1,6 @@
 {
   "name": "scrat",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Modular front-end integrated solution for mobile",
   "main": "index.js",
   "preferGlobal": true,
@@ -23,7 +23,7 @@
     "fis-parser-handlebars": "0.0.1",
     "fis-parser-marked": "0.0.5",
     "fis-parser-less" : "0.1.2",
-    "fis-parser-sass" : "0.3.5",
+    "fis-parser-sass" : "0.3.6",
     "scrat-command-init": "0.1.2",
     "scrat-command-install": "0.1.5-2",
     "scrat-command-server": "0.0.12",
