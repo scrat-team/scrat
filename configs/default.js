@@ -7,15 +7,13 @@ module.exports = {
     urlPrefix : '',
     project : {
         fileType : {
-            text : 'handlebars, jade, ejs, jsx, styl, sass, scss, less'
+            text : 'handlebars, jade, ejs, jsx, styl, less'
         }
     },
     modules : {
         parser : {
             handlebars : 'handlebars',
             styl       : 'stylus',
-            sass       : 'sass',
-            scss       : 'sass',
             less       : 'less',
             md         : 'marked'
         },
@@ -32,8 +30,6 @@ module.exports = {
         ext : {
             jsx : 'js',
             styl : 'css',
-            sass : 'css',
-            scss : 'css',
             less : 'css'
         },
         path : [
@@ -72,7 +68,7 @@ module.exports = {
                 release : '/views/${name}/${version}/$1'
             },
             {
-                reg : /^\/component_modules\/(.*)\.(styl|scss|sass|less|css)$/i,
+                reg : /^\/component_modules\/(.*)\.(styl|less|css)$/i,
                 id : '$1.css',
                 isMod : true,
                 useSprite : true,
@@ -94,7 +90,7 @@ module.exports = {
                 release : '/public/c/$1'
             },
             {
-                reg : /^\/components\/(.*)\.(styl|scss|sass|less|css)$/i,
+                reg : /^\/components\/(.*)\.(styl|less|css)$/i,
                 id : '${name}/${version}/$1.css',
                 isMod : true,
                 useSprite : true,

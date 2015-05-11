@@ -47,7 +47,7 @@ function resolve(id, ref, ext) {
 
     // 尝试相似类型后缀名
     var looksLike = {
-        '.css': ['.styl','.sass','.less']
+        '.css': ['.styl', '.less']
     };
 
     if (looksLike.hasOwnProperty(ext)) {
