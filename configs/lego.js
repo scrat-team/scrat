@@ -20,6 +20,10 @@ module.exports = [{
     release : '/lego/v/$1',
     url: '/s/uae/g/06/lego/v/$1'
 }, {
+    reg: '**.handlebars',
+    release: false,
+    isJsLike: true
+}, {
     reg: /^\/units\/.*?unit\.json$/i,
     release: false
 }, {
