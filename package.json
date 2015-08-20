@@ -34,7 +34,7 @@
     "scrat-command-install": "0.1.5-2",
     "scrat-command-server": "0.0.19",
     "scrat-parser-babel": "0.0.1",
-    "scrat-deploy-compress": "^0.1.0",
+    "scrat-deploy-compress": "0.1.1",
     "scrat-parser-stylus": "0.0.4",
     "scrat-preprocessor-nightcss": "0.1.0"
   },
