@@ -20,6 +20,7 @@ module.exports = {
         lint : {
             js: 'jshint'
         },
+        deploy: ['default', 'compress'],
         postprocessor : {
             js : [ plugins.define ]
         },
@@ -160,6 +161,17 @@ module.exports = {
             csssprites: {
                 htmlUseSprite: true,
                 styleReg: /(<style(?:(?=\s)[\s\S]*?["'\s\w\/\-]>|>))([\s\S]*?)(<\/style\s*>|$)/ig
+            }
+        },
+        deploy: {
+            default: {
+                local: {
+                    to: '../dist'
+                }
+           },
+            compress: {
+                zip: {
+                }
             }
         }
     }
