@@ -4,7 +4,7 @@
 
 ## 官网
 
-> http://scrat-team.github.io/
+> http://scrat.io/
 >
 > ![二维码](https://github.com/scrat-team/scrat-site/raw/master/views/img/qrcode.png)
 
