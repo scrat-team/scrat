@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "cheerio": "0.19.0",
-    "fis": "1.9.28",
+    "fis": "1.9.34",
     "fis-lint-jshint": "0.0.10",
     "fis-optimizer-html-minifier": "0.0.9",
     "fis-parser-handlebars": "0.0.1",
@@ -37,7 +37,7 @@
     "scrat-parser-babel": "0.0.1",
     "scrat-deploy-compress": "0.1.1",
     "scrat-parser-stylus": "0.0.4",
-    "scrat-preprocessor-nightcss": "0.1.0"
+    "scrat-preprocessor-nightcss": "0.1.1"
   },
   "author": "scrat-team",
   "license": "MIT"
