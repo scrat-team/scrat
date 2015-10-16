@@ -1,6 +1,6 @@
 {
   "name": "scrat",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Modular front-end integrated solution for mobile",
   "main": "index.js",
   "preferGlobal": true,
@@ -22,7 +22,6 @@
     "url": "https://github.com/scrat-team/scrat.git"
   },
   "dependencies": {
-    "cheerio": "0.19.0",
     "fis": "1.9.34",
     "fis-lint-jshint": "0.0.10",
     "fis-optimizer-html-minifier": "0.0.9",
