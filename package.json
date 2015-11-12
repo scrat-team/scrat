@@ -22,7 +22,7 @@
     "url": "https://github.com/scrat-team/scrat.git"
   },
   "dependencies": {
-    "fis": "1.9.36",
+    "fis": "1.9.37",
     "fis-lint-jshint": "0.0.10",
     "fis-optimizer-html-minifier": "0.0.9",
     "fis-parser-handlebars": "0.0.1",
