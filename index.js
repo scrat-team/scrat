@@ -100,6 +100,11 @@ fis.seo = function(name){
   fis.config.set('modules.postpackager', require('./plugins/postpackager/seo.js'));
 };
 
+//register command plugins
+['publish'].forEach(function(name){
+  fis.require._cache['command-' + name] = require('./plugins/command/' + name);
+});
+
 //alias
 Object.defineProperty(global, 'scrat', {
     enumerable : true,
