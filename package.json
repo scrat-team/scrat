@@ -30,11 +30,12 @@
     "fis-parser-less": "0.1.3",
     "fis-parser-marked": "0.0.6",
     "fis-parser-node-sass": "0.1.1",
+    "fis-postprocessor-autoprefixer": "0.0.5",
     "scrat-command-init": "0.1.3",
     "scrat-command-install": "0.1.5-2",
     "scrat-command-server": "0.0.21",
-    "scrat-parser-babel": "0.0.1",
     "scrat-deploy-compress": "0.1.1",
+    "scrat-parser-babel": "0.0.1",
     "scrat-parser-stylus": "0.0.4",
     "scrat-preprocessor-nightcss": "0.1.1"
   },
