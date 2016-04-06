@@ -25,7 +25,7 @@ function makeComponentModulesAlias(componentFile, map, ret) {
         //遍历component.json中的dependencies字段
         fis.util.map(json.dependencies, function(name, version){
             //必须使用明确的版本号
-            if(/^\d\./.test(version)){
+            if(/^\d+\./.test(version)){
                 //获取模块名，处理路径分隔符
                 var module_name = name.split('/').join('-');
                 //根据版本号找到模块目录
