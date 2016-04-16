@@ -69,8 +69,13 @@ fis.seo = function(name){
       release: '/views/c/$1'
     },
     {
-      reg: /^\/components\/(.*)$/i,
+      reg: /^\/components\/(.*\.(js|css))$/i,
       isMod: true,
+      useSprite: true,
+      release: '/public/c/$1'
+    },
+    {
+      reg: /^\/components\/(.*)$/i,
       useSprite: true,
       release: '/public/c/$1'
     },
