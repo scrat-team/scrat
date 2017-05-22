@@ -110,10 +110,6 @@ fis.seo = function(name, roadmapPath){
 
   fis.config.set('roadmap.path', userRule ? roadmapPath : builtinRules);
 
-
-  if(typeof name === 'object') fis.config.merge(name)
-  else fis.config.set('name', name || '')
-
   fis.config.set('modules.packager', 'map');
   fis.config.set('modules.preprocessor.tpl', require('./plugins/preprocessor/swig.js'));
   fis.config.set('modules.postpackager', require('./plugins/postpackager/seo.js'));
