@@ -32,8 +32,13 @@ fis.olpm.PACK_TYPE_INLINE   = 1;
 fis.olpm.PACK_TYPE_EXTERNAL = 2;
 //fis.olpm.PACK_TYPE_COMBO    = 3;
 
-fis.seo = function(name){
-  fis.config.set('roadmap.path', [
+fis.seo = function(name, roadmapPath){
+  if(arguments[0] && !!arguments[0].push) {
+    roadmapPath = name
+    name = ''
+  }
+
+  var builtinRules = [
     {
       reg: 'map.json',
       release: 'config/map.json'
@@ -94,7 +99,17 @@ fis.seo = function(name){
       useHash: false,
       useCompile: false
     }
-  ]);
+  ];
+  var userRule = roadmapPath && roadmapPath.push && roadmapPath.length
+
+  if(typeof name === 'object') {
+    fis.config.merge(name);
+  } else {
+    fis.config.set('name', name || '');
+  }
+
+  fis.config.set('roadmap.path', userRule ? roadmapPath : builtinRules);
+
 
   if(typeof name === 'object') fis.config.merge(name)
   else fis.config.set('name', name || '')
