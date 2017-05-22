@@ -33,11 +33,6 @@ fis.olpm.PACK_TYPE_EXTERNAL = 2;
 //fis.olpm.PACK_TYPE_COMBO    = 3;
 
 fis.seo = function(name){
-  if(typeof name === 'object'){
-    fis.config.merge(name);
-  } else {
-    fis.config.set('name', name || '');
-  }
   fis.config.set('roadmap.path', [
     {
       reg: 'map.json',
@@ -100,6 +95,10 @@ fis.seo = function(name){
       useCompile: false
     }
   ]);
+
+  if(typeof name === 'object') fis.config.merge(name)
+  else fis.config.set('name', name || '')
+
   fis.config.set('modules.packager', 'map');
   fis.config.set('modules.preprocessor.tpl', require('./plugins/preprocessor/swig.js'));
   fis.config.set('modules.postpackager', require('./plugins/postpackager/seo.js'));
