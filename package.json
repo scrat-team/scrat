@@ -1,6 +1,6 @@
 {
   "name": "scrat",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Modular front-end integrated solution for mobile",
   "main": "index.js",
   "preferGlobal": true,
