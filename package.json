@@ -30,7 +30,7 @@
     "fis-parser-handlebars-3.x": "~0.0.1",
     "fis-parser-less": "~0.1.3",
     "fis-parser-marked": "~0.0.6",
-    "fis-parser-node-sass": "~0.2.1",
+    "fis-parser-node-sass": "~1.0.3",
     "fis-postprocessor-autoprefixer": "~0.0.5",
     "scrat-command-init": "~0.1.3",
     "scrat-command-install": "~0.1.5-2",
