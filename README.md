@@ -1,3 +1,5 @@
+Also add readme in English 
+
 ## WEBAPP模块化开发框架
 
 ![模块化开发](https://github.com/scrat-team/scrat-site/raw/master/views/img/cubes.png)
